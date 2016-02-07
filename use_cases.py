@@ -68,15 +68,6 @@ def useCaseTwo():
 			if(j == numOfWindowSlots - 1):			#if at last participant, make slot available
 				availableParticipants.append(i)
 
-
-#	availableParticipants = list()
-#	for i in range(0, numOfWindowSlots):			#each time slot
-#		for j in range(0, numOfParticipants):		#each participant
-#			if(meetingMatrix[j][i] == 1):			#if participant is not available in this slot
-#				continue							#go to next participant
-#			elif(i == numOfWindowSlots - 1):			#if at last window slot, store participant
-#				availableParticipants.append(j)
-
 	#Display times when participants are available during the entire timeWindow
 	print 'Use Case Two - participant(s) available during the entire time window'
 	for i in availableParticipants:
