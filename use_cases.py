@@ -86,7 +86,7 @@ def useCaseOne():
 	availableMeetingSlots = list()
 	index = 0
 	#name = raw_input("Enter a single user name")
-	name = 'jason'				        
+	name = 'Jason'				        
 	for index, elem in enumerate(participants):						               
 	   if(elem.getName() == name):
 	      break;        
