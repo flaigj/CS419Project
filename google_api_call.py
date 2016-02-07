@@ -29,10 +29,23 @@ def getParticipantData():
 						"Tue Jan 26 2016 12:00:00 GMT-0800 (PST)",
 						"Tue Jan 26 2016 15:00:00 GMT-0800 (PST)"]
 	
+	name_3 = "Superman"		#Superman is available during timeWindow for use case 2 testing
+	openTimeSlot_3 = ["Tue Jan 26 2016 10:30:00 GMT-0800 (PST)", 
+						"Tue Jan 26 2016 11:00:00 GMT-0800 (PST)",
+						"Tue Jan 26 2016 11:30:00 GMT-0800 (PST)",
+						"Tue Jan 26 2016 12:00:00 GMT-0800 (PST)",
+						"Tue Jan 26 2016 12:30:00 GMT-0800 (PST)",
+						"Tue Jan 26 2016 13:00:00 GMT-0800 (PST)",
+						"Tue Jan 26 2016 13:30:00 GMT-0800 (PST)",
+						"Tue Jan 26 2016 14:00:00 GMT-0800 (PST)",
+						"Tue Jan 26 2016 14:30:00 GMT-0800 (PST)",
+						"Tue Jan 26 2016 15:00:00 GMT-0800 (PST)"]
+
 	#Please return an array of type Participants class
 	participants = list()
 	participants.append( Participants(name_1, openTimeSlot_1) )
 	participants.append( Participants(name_2, openTimeSlot_2) )
+	participants.append( Participants(name_3, openTimeSlot_3) )
 	#======================= DUMMY DATA ===============================================	
 
 	return participants

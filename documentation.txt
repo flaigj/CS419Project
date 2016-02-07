@@ -1,0 +1,155 @@
+==========================================
+main.py Module
+==========================================
+Main program to call other modules.
+
+Currently calling the find_open_slots.py module
+
+Later will have to call user interface interaction features
+
+
+==========================================
+google_api_call.py Module
+==========================================
+Make Google Calendar API call for each participant given Actor's input restraints.
+
+Returns data array as Participants class.
+
+time slot data should be in the following format:
+Tue Jan 26 2016 07:00:00 GMT-0800 (PST)
+
+
+==========================================
+find_open_slots.py Module
+==========================================
+Create matrix showing each participants availability in the Actor's meeting time slots
+
+Preconditon: requires google_api_call.py module's Participant class array
+
+Returns 2-dimensional array (matrix) of participant availabilities
+
+
+==========================================
+functions.py Module
+==========================================
+Helper functions to other modules as follows:
+
+parseGoogleTime()
+-------------------
+Parse through Google's date/time return data and store in GoogleTime
+
+
+monthStringToInt()
+-------------------
+Convert month in string format to its numeric representation
+
+
+googleTimeToPosix()
+--------------------
+Convert GoogleTime object to unix time stamp in seconds
+
+
+timeStrToPosix()
+-----------------
+Convert GoogleTime object to unix time stamp in seconds
+
+
+hoursRange()
+-------------
+Calculate number of minutes between the start and end times
+
+
+createTimeSlots()
+------------------
+Create n time slots based on beginning and end times, and minutes to increment
+
+
+posixToPST()
+-------------
+Change POSIX time in seconds to PST in date format
+
+
+==========================================
+use_cases.py Module
+==========================================
+Code for the three use cases
+
+useCaseOne()
+------------
+Given a single username in the local domain, provide a list of open times within the window specified.
+If no window is specifieed, use a sane default.
+
+
+useCaseTwo()
+------------
+Given a specific time window and a list of usernames, list all users available for the entire duration.
+This is more in the nature of who can I expect at the meeting?
+
+
+useCaseThree()
+---------------
+Given a more broad window and a list of usernames, provide all time periods where all are available.
+This is more in the nature of .when can I schedule the meeting?
+
+
+
+==========================================
+Classes
+==========================================
+#Save each participant's Google Calendar data in an array of type Participants
+class Participants:
+    def __init__(self, name, openTimeSlot):
+        self.name = name
+        self.openTimeSlot = openTimeSlot
+    def getOpenTimeSlot(self):
+         return self.openTimeSlot
+    def getName(self):
+        return self.name
+
+------------------------------------------
+
+#Signature of Google's data return: Tue Jan 26 2016 0800 GMT-0800 (PST)
+class GoogleTime:
+    def __init__(self, dayStr, month, day, year, time):
+        self.dayStr = dayStr
+        self.month = month
+        self.day = day
+        self.year = year
+        self.time = time
+
+    def getDayStr(self):
+        return self.dayStr
+
+    def getMonth(self):
+        return self.month
+
+    def getDay(self):
+        return self.day
+
+    def getYear(self):
+        return self.year
+
+    def getTime(self):
+        return self.time
+
+------------------------------------------
+class MeetingAvailability:
+    def __init__(self, meetingMatrix, participantData, numOfWindowSlots, timeWindowSlots):
+        self.meetingMatrix = meetingMatrix
+        self.participants = participantData
+        self.numOfWindowSlots = numOfWindowSlots
+        self.timeWindowSlots = timeWindowSlots
+
+    def getMeetingMatrix(self):
+        return self.meetingMatrix
+
+    def getParticipants(self):
+        return self.participants
+
+    def getNumOfWindowSlots(self):
+        return self.numOfWindowSlots
+
+    def getTimeWindowSlots(self):
+        return self.timeWindowSlots
+
+
