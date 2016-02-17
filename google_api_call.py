@@ -2,6 +2,7 @@
 import urllib2
 import json
 import re
+import user_interface as ui
 
 #Save each participant's Google Calendar data in an array of type Participants
 class Participants:
@@ -19,7 +20,9 @@ def getParticipantData():
 	#Google API Call code goes here
 
 	participants = list()
-	emailInput = "leima@oregonstate.edu groupnineemail@gmail.com" #will take in from user input (only works with valid PUBLIC calendars)
+	#participants = ui.getName()
+	#emailInput = "leima@oregonstate.edu groupnineemail@gmail.com" #will take in from user input (only works with valid PUBLIC calendars)
+	emailInput = ui.getEmailAddr()
 	dateInput = "2016-01-28" #will take in from user input
 	earliestTime = dateInput + "T00:00:00-08:00"  # -08:00 is PST; -07:00 is PDT (might encounter PDT if user picks a far off date)
 	latestTime = dateInput + "T23:59:00-08:00"
@@ -185,9 +188,15 @@ def getParticipantData():
 def getTimeWindowData():
 	#Time window -- Actor's input when making the Google API Call
 	#Signature: timeWindow = [startTime, endTime]
-	
-	timeWindow = ["Tue Jan 28 2016 10:30:00 GMT-0800 (PST)",    #dummy data
-	                "Tue Jan 28 2016 15:00:00 GMT-0800 (PST)"]
+	print "Enter a time window in the following format: Jan 28 2016 15:30"
+	timeType = ["start", "finish"]
+	timeWindow = list()
+	for x in range(0, 2):
+		ipt = raw_input("Enter a " + timeType[x] + " window")
+		timeWindow.append("Mon " + ipt + ":00 GMT-0800 (PST)")
+
+	#timeWindow = ["Tue Jan 28 2016 10:30:00 GMT-0800 (PST)",    #dummy data
+	#                "Tue Jan 28 2016 15:00:00 GMT-0800 (PST)"]
 	
 	#Test names return successfully
 	#for index, elem in enumerate(participants):

@@ -1,20 +1,19 @@
-#Main Program
+#main.py
 
 #Import Modules
-import use_cases as uc			#Use cases functions
+import user_interface as ui
 
-#Use Case 3
-#Given a more broad window and a list of usernames, provide all time periods where all are available
-useCaseThree = uc.useCaseThree()
+# main entry point
 
+option = ui.menu()
 
-#Use Case 2
-#Given a specifc time window and a list of usernames, list all users available for the entire duration.
-#This is more in the nature of .who can I expect at the meeting?
-useCaseTwo = uc.useCaseTwo()
+import use_cases as uc					#Use cases functions
 
+if (option == 1):
+	useCaseOne = uc.useCaseOne()		# One on one meeting
 
-#Use Case 1
-#Given a single username in the local domain, provide a list of open times within the window speci.ed.
-#If no window is speci.ed, use a sane default.
-useCaseOne = uc.useCaseOne()
+if (option == 2):
+	useCaseTwo = uc.useCaseTwo()		# Who can attend whole meeting
+
+if (option == 3):
+	useCaseThree = uc.useCaseThree()	# Multiple person meeting
