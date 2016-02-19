@@ -16,6 +16,7 @@ class Participants:
     def getName(self):
         return self.name
 
+
 #convert three letter month to string number 
 def getMonth(month):
 	if "Jan" in month:
@@ -49,7 +50,7 @@ def getParticipantData(timeWindow):
 
 	participants = list()
 	#participants = ui.getName()
-	#emailInput = "leima@oregonstate.edu groupnineemail@gmail.com" #will take in from user input (only works with valid PUBLIC calendars)
+	#emailInput = "groupnineemail@gmail.com leima@oregonstate.edu" #will take in from user input (only works with valid PUBLIC calendars)
 	emailInput = ui.getEmailAddr()
 	
 	myDate = timeWindow.split()
@@ -98,8 +99,22 @@ def getParticipantData(timeWindow):
 
 	#for each email address
 	for index, elem in enumerate(emailList):
-		# API call to Google Calendars API; timeMin is set to 00:00 and timeMax is set to 23:59, so we're going to get all events of that day
-		response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[index]+"/events?timeMin="+earliestTime+"&timeMax="+latestTime+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
+		#print emailList[index]
+		#badEmail = 0
+
+		try:
+
+			# API call to Google Calendars API; timeMin is set to 00:00 and timeMax is set to 23:59, so we're going to get all events of that day
+			response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[index]+"/events?timeMin="+earliestTime+"&timeMax="+latestTime+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
+			#print response
+		except urllib2.HTTPError, e:
+			print "\nERROR: We could not retrieve the calendar for", emailList[index]
+			print "Please make sure the email address is valid and the calendar is public\n"
+			#print e
+			#print 2
+			continue
+
+		#print 3
 		responseJson = json.loads(response) #converts to JSON object
 
 		#print(response) # use this to see structure of JSON
@@ -115,105 +130,115 @@ def getParticipantData(timeWindow):
 						'18:00:00', '18:30:00','19:00:00', '19:30:00', '20:00:00', '20:30:00',
 						'21:00:00', '21:30:00','22:00:00', '22:30:00', '23:00:00', '23:30:00']
 
-		
-		#traverse through the items to find the start dates of each event and then remove them from allOpenSlots array
+		hasAllDayEvent = 0
+
 		for idx, item in enumerate(responseJson['items']):
 			startDateTime = responseJson['items'][idx]['start']
-			if 'dateTime' in startDateTime: #gets the start time of the first event returned
-				takenDateTime = startDateTime['dateTime']
-				#print(takenDateTime)
+			
+			if 'date' in startDateTime: #if an all-day event, the event will not contain a time
+				hasAllDayEvent = 1
 
-			### what to do if all day event with no time? has 'date' as name (key) instead of 'dateTime'
+		if hasAllDayEvent == 1: # if all-day event exists
+			participants.append( Participants(emailList[index], []) ) #return the user with an empty list of open time slots
 
+		if hasAllDayEvent == 0: # if all-day event does not exists
 
-				#discards the date, leaves time of event
-				if "T" in takenDateTime:
-				    param, takenTimeSlots = takenDateTime.split("T", 1)
+			#traverse through the items to find the start dates of each event and then remove them from allOpenSlots array
+			for idx, item in enumerate(responseJson['items']):
+				startDateTime = responseJson['items'][idx]['start']
 
-				#discards the time offset (e.g. -8:00)
-				if "-" in takenDateTime:
-				    takenTimeSlotsTrimmed, paramdiscard = takenTimeSlots.split("-", 1)
-
-				    #print ("takenTimeSlotsTrimmed", takenTimeSlotsTrimmed)
-
-				takenTimeParts = re.split('[-:]', takenTimeSlotsTrimmed)
-				#print("takenTimeParts", takenTimeParts)
-
-				#turn start time string into integer (8:30 will be 850)
-				takenStartTimeInt = int(takenTimeParts[0]) * 100
-				takenStartTimeInt += int(takenTimeParts[1]) * 50 / 30
-
-				#print(takenStartTimeInt)
-
-			endDateTime = responseJson['items'][idx]['end']
-			if 'dateTime' in endDateTime: #gets the end time of the first event returned
-				takenEndDateTime = endDateTime['dateTime']
-				#print(takenEndDateTime)
-
-				if "T" in takenEndDateTime:
-					param, takenEndTime = takenEndDateTime.split("T",1)
-
-				takenEndTimeParts = re.split('[-:]', takenEndTime)
-				#print(takenEndTimeParts)
-
-				#turns end time string into integer (8:30 will be 850)
-				takenEndTimeInt = int(takenEndTimeParts[0]) * 100
-				takenEndTimeInt += int(takenEndTimeParts[1]) * 50 / 30
-				#print(takenEndTimeInt)
-
-				#checks to see if the event lasted for more than a half an hour.
-				#if so, we need to remove those times from allOpenSlots array
-				eventSpan = takenEndTimeInt - takenStartTimeInt
-				if eventSpan > 50: #if the span is greater than a half hour
-					halfHourIncrements = (eventSpan/50) - 1
-
-					#loop that adds taken half hour slots to takenIncrementsStr
-					for i in range(halfHourIncrements):
-						takenStartTimeInt += 50
-						takenIncrementsStr = ""
-
-						# if it is a XX:00 (e.g. turn 800 to 8:00)
-						if (takenStartTimeInt % 100) == 0:
-							if takenStartTimeInt < 1000:
-								takenIncrementsStr += "0" + (str(takenStartTimeInt/100))
-							else:
-								takenIncrementsStr += (str(takenStartTimeInt/100))
-							takenIncrementsStr += (":00")
-
-						# if it is a XX:30 (e.g. turn 850 to 8:30)
-						if (takenStartTimeInt % 100) != 0:
-							takenStartTimeInt -= 50
-							if takenStartTimeInt < 1000:
-								takenIncrementsStr += "0" + (str(takenStartTimeInt/100))
-							else:
-								takenIncrementsStr += (str(takenStartTimeInt/100))
-							takenIncrementsStr += (":30")
-
-						#print("takenIncrements"+takenIncrementsStr)
-
-						#convert to string (needs to match the format of the allOpenSlots)
-						takenTimeSlotsTrimmed += " " + takenIncrementsStr + ":00"
-						#print("taken time slots trimmed"+takenTimeSlotsTrimmed)
-
-						#split into array of times
-						occupiedTimeSlotList = takenTimeSlotsTrimmed.split()
-						#print occupiedTimeSlotList
+				if 'dateTime' in startDateTime: #gets the start time of the first event returned
+					takenDateTime = startDateTime['dateTime']
+					#print(takenDateTime)
 
 
-			#if the time of the user's event is present, remove the slot
-			for j, elem in enumerate(occupiedTimeSlotList):
-				if occupiedTimeSlotList[j] in allOpenSlots:  ###########remove the array of times in takenTimeSlots
-					allOpenSlots.remove(occupiedTimeSlotList[j])
+					#discards the date, leaves time of event
+					if "T" in takenDateTime:
+					    param, takenTimeSlots = takenDateTime.split("T", 1)
 
-		#print(allOpenSlots)
+					#discards the time offset (e.g. -8:00)
+					if "-" in takenDateTime:
+					    takenTimeSlotsTrimmed, paramdiscard = takenTimeSlots.split("-", 1)
 
-		#always uses "Mon"
-		for k, elem in enumerate(allOpenSlots):
-			allOpenSlots[k] = "Mon " + dateModified + " " +allOpenSlots[k] + " GMT-0800 (PST)"
+					    #print ("takenTimeSlotsTrimmed", takenTimeSlotsTrimmed)
+
+					takenTimeParts = re.split('[-:]', takenTimeSlotsTrimmed)
+					#print("takenTimeParts", takenTimeParts)
+
+					#turn start time string into integer (8:30 will be 850)
+					takenStartTimeInt = int(takenTimeParts[0]) * 100
+					takenStartTimeInt += int(takenTimeParts[1]) * 50 / 30
+
+					#print(takenStartTimeInt)
+
+				endDateTime = responseJson['items'][idx]['end']
+				if 'dateTime' in endDateTime: #gets the end time of the first event returned
+					takenEndDateTime = endDateTime['dateTime']
+					#print(takenEndDateTime)
+
+					if "T" in takenEndDateTime:
+						param, takenEndTime = takenEndDateTime.split("T",1)
+
+					takenEndTimeParts = re.split('[-:]', takenEndTime)
+					#print(takenEndTimeParts)
+
+					#turns end time string into integer (8:30 will be 850)
+					takenEndTimeInt = int(takenEndTimeParts[0]) * 100
+					takenEndTimeInt += int(takenEndTimeParts[1]) * 50 / 30
+					#print(takenEndTimeInt)
+
+					#checks to see if the event lasted for more than a half an hour.
+					#if so, we need to remove those times from allOpenSlots array
+					eventSpan = takenEndTimeInt - takenStartTimeInt
+					if eventSpan > 50: #if the span is greater than a half hour
+						halfHourIncrements = (eventSpan/50) - 1
+
+						#loop that adds taken half hour slots to takenIncrementsStr
+						for i in range(halfHourIncrements):
+							takenStartTimeInt += 50
+							takenIncrementsStr = ""
+
+							# if it is a XX:00 (e.g. turn 800 to 8:00)
+							if (takenStartTimeInt % 100) == 0:
+								if takenStartTimeInt < 1000:
+									takenIncrementsStr += "0" + (str(takenStartTimeInt/100))
+								else:
+									takenIncrementsStr += (str(takenStartTimeInt/100))
+								takenIncrementsStr += (":00")
+
+							# if it is a XX:30 (e.g. turn 850 to 8:30)
+							if (takenStartTimeInt % 100) != 0:
+								takenStartTimeInt -= 50
+								if takenStartTimeInt < 1000:
+									takenIncrementsStr += "0" + (str(takenStartTimeInt/100))
+								else:
+									takenIncrementsStr += (str(takenStartTimeInt/100))
+								takenIncrementsStr += (":30")
+
+							#print("takenIncrements"+takenIncrementsStr)
+
+							#convert to string (needs to match the format of the allOpenSlots)
+							takenTimeSlotsTrimmed += " " + takenIncrementsStr + ":00"
+							#print("taken time slots trimmed"+takenTimeSlotsTrimmed)
+
+							#split into array of times
+							occupiedTimeSlotList = takenTimeSlotsTrimmed.split()
+							#print occupiedTimeSlotList
 
 
-		participants.append( Participants(emailList[index], allOpenSlots) )
+				#if the time of the user's event is present, remove the slot
+				for j, elem in enumerate(occupiedTimeSlotList):
+					if occupiedTimeSlotList[j] in allOpenSlots:  ###########remove the array of times in takenTimeSlots
+						allOpenSlots.remove(occupiedTimeSlotList[j])
 
+				#print(allOpenSlots)
+
+				#always uses "Mon"
+				for k, elem in enumerate(allOpenSlots):
+					allOpenSlots[k] = "Mon " + dateModified + " " +allOpenSlots[k] + " GMT-0800 (PST)"
+
+
+				participants.append( Participants(emailList[index], allOpenSlots) )
 
 	return participants
 
