@@ -4,6 +4,7 @@
 import find_open_slots as fos       #Available meeting time among all participants
 import functions as func			#Helper functions
 
+
 #All participants and their availability during timeWindow: object MeetingMatrix
 meetingAvailability = fos.createMeetingMatrix()
 
@@ -85,15 +86,14 @@ def useCaseOne():
 	print 'Use case one - Given a time window provide a list of open time within window'
 	availableMeetingSlots = list()
 	index = 0
-	#name = raw_input("Enter a single user name")
-	name = 'Jason'				        
-	for index, elem in enumerate(participants):						               
-	   if(elem.getName() == name):
-	      break;        
+	#name = 'Jason'				        
+	#for index, elem in enumerate(participants):						               
+	#   if(elem.getName() == name):
+	#      break;        
 	for i in range(0, numOfWindowSlots):	                  
 	   if meetingMatrix[index][i] == 0:			                    
 	      availableMeetingSlots.append(i)
-	print name + " is available for the following times"
+	#print name + " is available for the following times"
 	for i in availableMeetingSlots:					
 	   slot = func.posixToPST(timeWindowSlots[i])						               
 	   print slot

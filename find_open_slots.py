@@ -27,14 +27,16 @@ class MeetingAvailability:
 def createMeetingMatrix():
 	#Get time window data from Google API call
 	timeWindowData = google.getTimeWindowData()
-	
+
 	#Get participants data from Google API call
-	participantData = google.getParticipantData()
+	participantData = google.getParticipantData(timeWindowData[0])
 	
+	# parseGoogleTime returns class object for getday - getYear
 	#Parse start and end times of timeWindow provided by Actor and store in object GoogleTime
 	timeWindowStart = func.parseGoogleTime(timeWindowData[0])
 	timeWindowEnd = func.parseGoogleTime(timeWindowData[1])
 	
+	# 
 	#Calculate the number of 30 minute slots in timeWindow
 	minutesRange = func.hoursRange(timeWindowStart, timeWindowEnd)
 	

@@ -12,8 +12,9 @@ def getNumber(minVal, maxVal):
 				digit = None
 	return option
 
+# gets space delimited emails
 def getEmailAddr():
-	emails = raw_input("Enter email addresses for users delimited by spaces: ") 
+	emails = raw_input("\nEnter email addresses for users delimited by spaces: ") 
 	return emails
 
 def getName():
@@ -28,10 +29,11 @@ def getName():
 # display menu
 # get option from user
 def menu():
-	print "Choose of of the following options"
+	print "Welcome to the meeting scheduling applicaiton"
+	print "Choose of of the following options\n"
 	print "1) Get meeting times for one on one meeting"
 	print "2) Get available people for meeting"
-	print "3) Get meeting times for multiple people"
+	print "3) Get meeting times for multiple people\n"
 
 	option = getNumber(1, 3)			# get number between 1 and 3
 	return option

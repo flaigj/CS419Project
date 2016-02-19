@@ -16,14 +16,48 @@ class Participants:
     def getName(self):
         return self.name
 
-def getParticipantData():
+#convert three letter month to string number 
+def getMonth(month):
+	if "Jan" in month:
+		month = "01"
+	elif "Feb" in month:
+		month = "02"
+	elif "Mar" in month:
+		month = "03"
+	elif "Apr" in month:
+		month = "04"
+	elif "May" in month:
+		month = "05"
+	elif "Jun" in month:
+		month = "06"
+	elif "Jul" in month:
+		month = "07"
+	elif "Aug" in month:
+		month = "08"
+	elif "Sep" in month:
+		month = "09"
+	elif "Oct" in month:
+		month = "10"
+	elif "Nov" in month:
+		month = "11"
+	elif "Dec" in month:
+		month = "12"
+	return month
+
+def getParticipantData(timeWindow):
 	#Google API Call code goes here
 
 	participants = list()
 	#participants = ui.getName()
 	#emailInput = "leima@oregonstate.edu groupnineemail@gmail.com" #will take in from user input (only works with valid PUBLIC calendars)
 	emailInput = ui.getEmailAddr()
-	dateInput = "2016-01-28" #will take in from user input
+	
+	myDate = timeWindow.split()
+
+	mymonth = getMonth(myDate[1])
+	dateInput =  myDate[3] + "-" + mymonth + "-" + myDate[2] 
+
+	#dateInput = "2016-01-28" #will take in from user input 
 	earliestTime = dateInput + "T00:00:00-08:00"  # -08:00 is PST; -07:00 is PDT (might encounter PDT if user picks a far off date)
 	latestTime = dateInput + "T23:59:00-08:00"
 
@@ -192,7 +226,7 @@ def getTimeWindowData():
 	timeType = ["start", "finish"]
 	timeWindow = list()
 	for x in range(0, 2):
-		ipt = raw_input("Enter a " + timeType[x] + " window")
+		ipt = raw_input("Enter a " + timeType[x] + " window: ")
 		timeWindow.append("Mon " + ipt + ":00 GMT-0800 (PST)")
 
 	#timeWindow = ["Tue Jan 28 2016 10:30:00 GMT-0800 (PST)",    #dummy data
