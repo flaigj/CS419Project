@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset='utf-8'>
+	<title>Menu Page</title>
+</head>
+<body>
+	<h1>Time Window and Participants</h1>
+	<form action="/google-api" method="post">		
+		Start Date <input type="date" name="startDate"></input>
+		Start Time <input type="time" name="startTime"></input>
+		<br>
+		End Date <input type="date" name="endDate"></input>
+		End Time <input type="time" name="endTime"></input>
+		<br>
+
+		<!-- Get participant email based on which use case was chosen -->
+		{% if useCase == '1' %}
+			Use case is 1
+		{% else %} {% if useCase == '2' %}
+			Use case is 2
+		{% else %} {% if useCase == '3' %}
+			Use case is 3		
+		{% endif %}
+		{% endif %}
+		{% endif %}		
+		<br>
+		<input type="submit" value="Submit" />
+	</form>
+
+</body>
+</html>

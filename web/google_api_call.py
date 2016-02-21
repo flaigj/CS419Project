@@ -264,3 +264,8 @@ def getTimeWindowData():
 		#	participants[index].getOpenTimeSlot()
 
 		return timeWindow
+
+class FrankTest(webapp2.RequestHandler):
+	def post(self):
+		startDate = self.request.get('startDate')
+		self.response.write(startDate)
