@@ -190,7 +190,7 @@ def getParticipantData(timeWindow):
 				if occupiedTimeSlotList[j] in allOpenSlots:  ###########remove the array of times in takenTimeSlots
 					allOpenSlots.remove(occupiedTimeSlotList[j])
 
-		#print(allOpenSlots)
+		print(allOpenSlots)
 		exit(0)
 
 		#always uses "Mon"

@@ -33,6 +33,40 @@ class GoogleTime:
 
 
 #===================================================================================
+#monthStrToNum
+#===================================================================================
+#convert three letter month to string number
+#Input: Three letter month
+#Return: int representing month
+def monthStrToNum(month):
+	if "Jan" in month:
+	    month = "01"
+	elif "Feb" in month:
+	    month = "02"
+	elif "Mar" in month:
+	    month = "03"
+	elif "Apr" in month:
+	    month = "04"
+	elif "May" in month:
+	    month = "05"
+	elif "Jun" in month:
+	    month = "06"
+	elif "Jul" in month:
+	    month = "07"
+	elif "Aug" in month:
+	    month = "08"
+	elif "Sep" in month:
+	    month = "09"
+	elif "Oct" in month:
+	    month = "10"
+	elif "Nov" in month:
+	    month = "11"
+	elif "Dec" in month:
+	    month = "12"
+	return month
+
+
+#===================================================================================
 #parseGoogleTime
 #===================================================================================
 #Parse through Google's date/time return data and store in GoogleTime
@@ -73,6 +107,56 @@ def monthStringToInt(monthString):
         return out
     except:
         raise ValueError('Not a month')
+
+
+#===================================================================================
+#createRfcTimestamp
+#===================================================================================
+#Create RFC3339 timestamp from Actor's time and date inputs
+#Input: timestamp in timeWindow format
+#Return: RFC3339 timestamp
+def createRfcTimestamp(timestamp):
+	timestampSplit = timestamp.split()
+	month = monthStrToNum(timestampSplit[1])
+	date = timestampSplit[3] + "-" + month + "-" + timestampSplit[2]
+	time = "T" + timestampSplit[4] + "-" + "08:00"
+	rfcTimestamp = date + time
+	return rfcTimestamp
+
+
+#===================================================================================
+#monthIntToStr
+#===================================================================================
+#Convert month in int format to str
+#Input: month as int
+#Return: str representing month
+def monthIntToStr(monthInt):
+	if "01" in monthInt:
+	   month = "Jan"
+	elif "02" in monthInt:
+	   month = "Feb"
+	elif "03" in monthInt:
+	   month = "Mar"
+	elif "04" in monthInt:
+	   month = "Apr"
+	elif "05" in monthInt:
+	   month = "May"
+	elif "06" in monthInt:
+	   month = "Jun"
+	elif "07" in monthInt:
+	   month = "Jul"
+	elif "08" in monthInt:
+	   month = "Aug"
+	elif "09" in monthInt:
+	   month = "Sep"
+	elif "10" in monthInt:
+	   month = "Oct"
+	elif "11" in monthInt:
+	   month = "Nov"
+	elif "12" in monthInt:
+	   month = "Dec"
+
+	return month
 
 
 #===================================================================================

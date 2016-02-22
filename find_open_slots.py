@@ -29,7 +29,7 @@ def createMeetingMatrix():
 	timeWindowData = google.getTimeWindowData()
 
 	#Get participants data from Google API call
-	participantData = google.getParticipantData(timeWindowData[0])
+	participantData = google.getParticipantData(timeWindowData)
 	
 	# parseGoogleTime returns class object for getday - getYear
 	#Parse start and end times of timeWindow provided by Actor and store in object GoogleTime
