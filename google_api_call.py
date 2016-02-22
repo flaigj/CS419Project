@@ -3,6 +3,7 @@ import urllib2
 import json
 import re
 import user_interface as ui
+import functions as func
 
 #Save each participant's Google Calendar data in an array of type Participants
 class Participants:
@@ -16,84 +17,55 @@ class Participants:
     def getName(self):
         return self.name
 
-#convert three letter month to string number 
-def getMonth(month):
-	if "Jan" in month:
-		month = "01"
-	elif "Feb" in month:
-		month = "02"
-	elif "Mar" in month:
-		month = "03"
-	elif "Apr" in month:
-		month = "04"
-	elif "May" in month:
-		month = "05"
-	elif "Jun" in month:
-		month = "06"
-	elif "Jul" in month:
-		month = "07"
-	elif "Aug" in month:
-		month = "08"
-	elif "Sep" in month:
-		month = "09"
-	elif "Oct" in month:
-		month = "10"
-	elif "Nov" in month:
-		month = "11"
-	elif "Dec" in month:
-		month = "12"
-	return month
 
 def getParticipantData(timeWindow):
-	#Google API Call code goes here
-
 	participants = list()
-	#participants = ui.getName()
-	#emailInput = "leima@oregonstate.edu groupnineemail@gmail.com" #will take in from user input (only works with valid PUBLIC calendars)
 	emailInput = ui.getEmailAddr()
 	
-	myDate = timeWindow.split()
+	startTimestamp = func.createRfcTimestamp(timeWindow[0])
+	endTimestamp = func.createRfcTimestamp(timeWindow[1])
 
-	mymonth = getMonth(myDate[1])
-	dateInput =  myDate[3] + "-" + mymonth + "-" + myDate[2] 
-
-	#dateInput = "2016-01-28" #will take in from user input 
-	earliestTime = dateInput + "T00:00:00-08:00"  # -08:00 is PST; -07:00 is PDT (might encounter PDT if user picks a far off date)
-	latestTime = dateInput + "T23:59:00-08:00"
+	#myDate = timeWindow.split()
+	#mymonth = func.monthStrToNum(myDate[1])
+	#dateInput =  myDate[3] + "-" + mymonth + "-" + myDate[2] 
+	#
+	##dateInput = "2016-01-28" #will take in from user input 
+	#earliestTime = dateInput + "T08:00:00-08:00"  # -08:00 is PST; -07:00 is PDT (might encounter PDT if user picks a far off date)
+	#latestTime = dateInput + "T15:00:00-08:00"
 
 	emailList = emailInput.split() #create email list delimited by space character
 	#print(emailList)
 
 	#splits the date the user inputted into an array
-	dateInputSplit = re.split('[-]', dateInput)
+	#dateInputSplit = re.split('[-]', dateInput)
 
-	#convert numerical month to three-letter text
-	if "01" in dateInputSplit[1]:
-		month = "Jan"
-	elif "02" in dateInputSplit[1]:
-		month = "Feb"
-	elif "03" in dateInputSplit[1]:
-		month = "Mar"
-	elif "04" in dateInputSplit[1]:
-		month = "Apr"
-	elif "05" in dateInputSplit[1]:
-		month = "May"
-	elif "06" in dateInputSplit[1]:
-		month = "Jun"
-	elif "07" in dateInputSplit[1]:
-		month = "Jul"
-	elif "08" in dateInputSplit[1]:
-		month = "Aug"
-	elif "09" in dateInputSplit[1]:
-		month = "Sep"
-	elif "10" in dateInputSplit[1]:
-		month = "Oct"
-	elif "11" in dateInputSplit[1]:
-		month = "Nov"
-	elif "12" in dateInputSplit[1]:
-		month = "Dec"
+	##convert numerical month to three-letter text
+	#if "01" in dateInputSplit[1]:
+	#	month = "Jan"
+	#elif "02" in dateInputSplit[1]:
+	#	month = "Feb"
+	#elif "03" in dateInputSplit[1]:
+	#	month = "Mar"
+	#elif "04" in dateInputSplit[1]:
+	#	month = "Apr"
+	#elif "05" in dateInputSplit[1]:
+	#	month = "May"
+	#elif "06" in dateInputSplit[1]:
+	#	month = "Jun"
+	#elif "07" in dateInputSplit[1]:
+	#	month = "Jul"
+	#elif "08" in dateInputSplit[1]:
+	#	month = "Aug"
+	#elif "09" in dateInputSplit[1]:
+	#	month = "Sep"
+	#elif "10" in dateInputSplit[1]:
+	#	month = "Oct"
+	#elif "11" in dateInputSplit[1]:
+	#	month = "Nov"
+	#elif "12" in dateInputSplit[1]:
+	#	month = "Dec"
 
-	dateModified = month + " " + dateInputSplit[2] + " " + dateInputSplit[0]
+	#dateModified = month + " " + dateInputSplit[2] + " " + dateInputSplit[0]
 	#print dateModified
 
 	#for each email address
@@ -104,7 +76,7 @@ def getParticipantData(timeWindow):
 		try:
 
 			# API call to Google Calendars API; timeMin is set to 00:00 and timeMax is set to 23:59, so we're going to get all events of that day
-			response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[index]+"/events?timeMin="+earliestTime+"&timeMax="+latestTime+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
+			response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[index]+"/events?timeMin="+startTimestamp+"&timeMax="+endTimestamp+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
 			#print response
 		except urllib2.HTTPError, e:
 			print "\nERROR: We could not retrieve the calendar for", emailList[index]
@@ -115,9 +87,7 @@ def getParticipantData(timeWindow):
 		#print "Testing"
 
 		responseJson = json.loads(response) #converts to JSON object
-
-		#print(response) # use this to see structure of JSON
-
+		#print responseJson['items'][0]['start']['dateTime']
 
 		#start with all time slots
 		allOpenSlots = ['00:00:00', '00:30:00','01:00:00', '01:30:00', '02:00:00', '02:30:00',
@@ -133,6 +103,7 @@ def getParticipantData(timeWindow):
 		#traverse through the items to find the start dates of each event and then remove them from allOpenSlots array
 		for idx, item in enumerate(responseJson['items']):
 			startDateTime = responseJson['items'][idx]['start']
+
 			if 'dateTime' in startDateTime: #gets the start time of the first event returned
 				takenDateTime = startDateTime['dateTime']
 				#print(takenDateTime)
@@ -220,6 +191,7 @@ def getParticipantData(timeWindow):
 					allOpenSlots.remove(occupiedTimeSlotList[j])
 
 		#print(allOpenSlots)
+		exit(0)
 
 		#always uses "Mon"
 		for k, elem in enumerate(allOpenSlots):
