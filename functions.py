@@ -5,6 +5,7 @@ import datetime
 import time
 from pytz import timezone
 import pytz
+import re
 
 #Data structure to store Google times
 #Signature of Google's data return: Tue Jan 26 2016 0800 GMT-0800 (PST)
@@ -33,11 +34,35 @@ class GoogleTime:
 
 
 #===================================================================================
+#findDayOfWeek
+#===================================================================================
+#Find the day of week (e.g., Mon, Tues) based on date input
+#Input: day, month, year as ints
+#Output: Three letter string representing day of week
+#Source: by Fuzzyman see www.voidspace.org.uk/atlantibots/pythonutils.html
+def findDayOfWeek(day, month, year):
+	d = day
+	m = month
+	y = year
+	if m < 3:
+	    z = y-1
+	else:
+	    z = y
+	dayofweek = ( 23*m//9 + d + 4 + y + z//4 - z//100 + z//400 )
+	if m >= 3:
+	    dayofweek -= 2
+	dayofweek = dayofweek%7
+	day =[ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
+
+	return day[dayofweek - 1]
+
+	
+#===================================================================================
 #monthStrToNum
 #===================================================================================
 #convert three letter month to string number
 #Input: Three letter month
-#Return: int representing month
+#Return: number representing month as string
 def monthStrToNum(month):
 	if "Jan" in month:
 	    month = "01"
@@ -63,6 +88,41 @@ def monthStrToNum(month):
 	    month = "11"
 	elif "Dec" in month:
 	    month = "12"
+	return month
+
+
+#===================================================================================
+#monthNumToStr
+#===================================================================================
+#convert month number as string to three letter month string
+#Input: month number as string
+#Return: three letter month string
+def monthNumToStr(monthNum):
+	if "01" in monthNum:
+		month = "Jan"
+	elif "02" in monthNum:
+		month = "Feb"
+	elif "03" in monthNum:
+		month = "Mar"
+	elif "04" in monthNum:
+		month = "Apr"
+	elif "05" in monthNum:
+		month = "May"
+	elif "06" in monthNum:
+		month = "Jun"
+	elif "07" in monthNum:
+		month = "Jul"
+	elif "08" in monthNum:
+		month = "Aug"
+	elif "09" in monthNum:
+		month = "Sep"
+	elif "10" in monthNum:
+		month = "Oct"
+	elif "11" in monthNum:
+		month = "Nov"
+	elif "12" in monthNum:
+		month = "Dec"
+
 	return month
 
 
@@ -122,6 +182,31 @@ def createRfcTimestamp(timestamp):
 	time = "T" + timestampSplit[4] + "-" + "08:00"
 	rfcTimestamp = date + time
 	return rfcTimestamp
+
+
+#===================================================================================
+#rfcToGoogleTimestamp
+#===================================================================================
+#Convert RFC339 timestamp to Google timestamp of Tue Jan 26 2016 07:00:00 GMT-0800 (PST) 
+#Input: RFC339 timestamp
+#Return: google timestamp
+def rfcToGoogleTimestamp(rfcTS):
+    #Split RFC timestamp into individual parts
+    rfcSplit = re.split('[-]', rfcTS)
+    day = rfcSplit[2]
+    day = re.split('T', day)
+    time = day[1]
+    day = int(day[0])
+    month = rfcSplit[1]
+    monthInt = int(month)
+    year = rfcSplit[0]
+    yearInt = int(year)
+    weekday = findDayOfWeek(day, monthInt, yearInt)
+
+    #Assemble timestamp in google format
+    #Tue Jan 26 2016 07:00:00 GMT-0800 (PST)
+    googleTS = weekday + " " + month + " " + year + " " + time + " GMT-800 (PST)"
+    return googleTS
 
 
 #===================================================================================

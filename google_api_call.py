@@ -37,17 +37,20 @@ def getParticipantData(timeWindow):
 		responseJson = json.loads(response) #converts to JSON object
 		#startTime = responseJson['items'][0]['start']
 
+		#Find Participant's scheduled meetings during timeWindow
 		#print responseJson['items'][0]['start']['dateTime']
 		#print responseJson['items']
-
-		#Find Participant's scheduled meetings during timeWindow
 		for idxEvent, eleEvent in enumerate(responseJson['items']):
 			if(eleEvent['status'] == 'confirmed' and	#ignore cancelled appointments
 			'dateTime' in responseJson['items'][idxEvent]['start']):	#ignore all day events
-				print responseJson['items'][idxEvent]['start']['dateTime']
-
+				
+				eventRfcTimestamp = responseJson['items'][idxEvent]['start']['dateTime']
+				eventSummary = responseJson['items'][idxEvent]['summary']
+				#print eventRfcTimestamp, eventSummary
 		
-		
+				#Convert RFC timestamp to Google timestamp format
+				eventGoogleTimestamp = func.rfcToGoogleTimestamp(eventRfcTimestamp)
+				print eventGoogleTimestamp, eventSummary
 
 		#participants.append( Participants(emailList[idxEmail], allOpenSlots) )
 	
