@@ -188,7 +188,8 @@ def createRfcTimestamp(timestamp):
 #rfcToGoogleTimestamp
 #===================================================================================
 #Convert RFC339 timestamp to Google timestamp of Tue Jan 26 2016 07:00:00 GMT-0800 (PST) 
-#Input: RFC339 timestamp
+#Input 1: RFC339 timestamp
+#Input 1: starting time window
 #Return: google timestamp
 def rfcToGoogleTimestamp(rfcTS):
 	#Split RFC timestamp into individual parts
@@ -207,7 +208,17 @@ def rfcToGoogleTimestamp(rfcTS):
 	
 	#Assemble timestamp in google format
 	#Tue Jan 26 2016 07:00:00 GMT-0800 (PST)
-	googleTS = weekday + " " + monthLetter + " " + day + " " + year + " " + time + " GMT-800 (PST)"
+	googleTS = weekday + " " + monthLetter + " " + day + " " + year + " " + time + " GMT-0800 (PST)"
+	#print '\n---------\n', googleTS
+
+	##If googleTS is < timeWindow, then this is a recurring event. Change to timeWindow
+	##googleTsObject = parseGoogleTime(googleTS)	
+	#googleTSPosix = timeStrToPosix(googleTS)
+	#timeWindowPosix = timeStrToPosix(timeWindow)
+
+	#if(googleTSPosix < timeWindowPosix):
+	#	googleTS = timeWindow
+
 	return googleTS
 
 
@@ -267,7 +278,7 @@ def googleTimeToPosix(googleTime):
 #===================================================================================
 #timeStrToPosix
 #===================================================================================
-#Convert GoogleTime object to unix time stamp in seconds
+#Convert GoogleTime in string to unix time stamp in seconds
 #Input: GoogleTime as string
 #Return: int time in seconds
 def timeStrToPosix(timeStr):
@@ -282,6 +293,28 @@ def timeStrToPosix(timeStr):
 	time_ts = time.mktime(timeStart.timetuple())	#convert to unix timestamp
 	return time_ts 
 
+
+#===================================================================================
+#posixToTimeStr
+#===================================================================================
+#Convert posix time to GoogleTime as string. Reverses timeStrToPosix()
+#Input: posix time in seconds
+#Output: Google time format as string. Format is Tue Jan 26 2016 07:00:00 GMT-0800 (PST)
+def posixToTimeStr(posixTime):
+	pstTime = posixToPST(posixTime)
+	pstTimeStr = str(pstTime)
+	pstSplit = pstTimeStr.split()
+	date = pstSplit[0]
+	time = pstSplit[1]
+	dateSplit = re.split('-', date)
+	year = dateSplit[0]
+	monthNum = dateSplit[1]
+	monthLetter = monthNumToStr(monthNum)
+	dayNum = dateSplit[2]
+	dayLetter = findDayOfWeek(int(dayNum), int(monthNum), int(year))	
+
+	googleTS = dayLetter + " " + monthLetter + " " + dayNum + " " + year + " " + time + " GMT-0800 (PST)"
+	return googleTS
 
 #===================================================================================
 #hoursRange
@@ -328,3 +361,55 @@ def createTimeSlots(timeStart, timeEnd, minutes):
 def posixToPST(posixTime):
 	date = datetime.datetime.fromtimestamp(posixTime)
 	return date
+
+
+#===================================================================================
+#numOfTimeWindowDays
+#===================================================================================
+#Determine the number of days (Mon, Tue) in Actor's time window. 
+#Input: Actor's start and end time window in Posix timestamp
+#Output: number of days in Actor's time window as int
+def numOfTimeWindowDays(start, end):
+	startDate = str(posixToPST(start))
+	startSplit = re.split(' ', startDate)
+	startSplit = re.split('-', startSplit[0])
+
+	endDate = str(posixToPST(end))
+	endSplit = re.split(' ', endDate)
+	endSplit = re.split('-', endSplit[0])
+
+	start = datetime.date(int(startSplit[0]), int(startSplit[1]),	int(startSplit[2]))
+	end = datetime.date(int(endSplit[0]), int(endSplit[1]), int(endSplit[2]))
+	days = end - start
+	daysSplit = str(days).split()
+	
+	if daysSplit[0] == '0:00:00':
+		return 0
+	return int(daysSplit[0])
+
+
+#===================================================================================
+#changeEventDate
+#===================================================================================
+#Change the event date to the date specified. Leave time the same.
+#Input 1: new date to change to in Google timestamp format as string
+#Input 2: Google timestamp as string that needs new date from input 1
+#Output: Google timestamp string with new date. Format is Tue Jan 26 2016 07:00:00 GMT-0800 (PST)
+def changeEventDate(newTS, oldTS):
+	newSplit = newTS.split()
+	oldSplit = oldTS.split()
+	ts = newSplit[0] + ' ' + newSplit[1] + ' ' + newSplit[2] + ' ' + newSplit[3] + ' ' + oldSplit[4] + ' ' + oldSplit[5] + ' ' + oldSplit[6]
+	return ts
+
+
+
+
+
+
+
+
+
+
+
+
+

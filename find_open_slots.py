@@ -67,25 +67,27 @@ def createMeetingMatrix():
 			#print 'index2 = ', index2
 			if(index3 < numOfParticipantSlots):		#Participant time slot
 				participantPosix = func.timeStrToPosix(participantSlot[index3])
-				#print func.posixToPST(participantPosix)
-				#print func.posixToPST(windowSlot)
+				print func.posixToPST(participantPosix)
+				print func.posixToPST(windowSlot)
 	
 				if(participantPosix == windowSlot):
-					#print 'equal'
+					print 'equal'
+					timeSlots.append(1)		#participant not available in meeting slot
+					index2 += 1		#next Actor's meeting slot
+					#continue	
+	
+				if(participantPosix < windowSlot):
+					print 'less'
 					timeSlots.append(0)		#participant available in meeting slot
 					index2 += 1		#next Actor's meeting slot
 					index3 += 1		#next participant's time slot
 					#continue	
 	
-				if(participantPosix < windowSlot):
-					#print 'less'
-					index3 += 1		#next participant's time slot
-					#continue	
-	
 				if(participantPosix > windowSlot):
-					#print 'more'
-					timeSlots.append(1)		#participant not available in meeting slot
+					print 'more'
+					timeSlots.append(0)		#participant available in meeting slot
 					index2 += 1		#next Actor's meeting slot
+					index3 += 1		#next participant's time slot
 					#continue	
 	
 			#Go to next participant if all participant time slots is checked
