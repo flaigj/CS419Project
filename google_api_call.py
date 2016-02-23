@@ -26,7 +26,8 @@ def getParticipantData(timeWindow):
 	endTimestamp = func.createRfcTimestamp(timeWindow[1])
 
 	#Make Google API call
-	for idxEmail, eleEmail in enumerate(emailList):  #for each email address
+	for idxEmail, eleEmail in enumerate(emailList):  #for each email address (Participant)
+		slotsBusy = list()
 		try:
 			response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[idxEmail]+"/events?timeMin="+startTimestamp+"&timeMax="+endTimestamp+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
 		except urllib2.HTTPError, e:
@@ -40,7 +41,7 @@ def getParticipantData(timeWindow):
 		#Find Participant's scheduled meetings during timeWindow
 		#print responseJson['items'][0]['start']['dateTime']
 		#print responseJson['items']
-		for idxEvent, eleEvent in enumerate(responseJson['items']):
+		for idxEvent, eleEvent in enumerate(responseJson['items']):	#for each event
 			if(eleEvent['status'] == 'confirmed' and	#ignore cancelled appointments
 			'dateTime' in responseJson['items'][idxEvent]['start']):	#ignore all day events
 				
@@ -50,12 +51,13 @@ def getParticipantData(timeWindow):
 		
 				#Convert RFC timestamp to Google timestamp format
 				eventGoogleTimestamp = func.rfcToGoogleTimestamp(eventRfcTimestamp)
-				print eventGoogleTimestamp, eventSummary
+				#print eventGoogleTimestamp, eventSummary
+			
+				slotsBusy.append(eventGoogleTimestamp)	
+		participants.append( Participants(emailList[idxEmail], slotsBusy) )
 
-		#participants.append( Participants(emailList[idxEmail], allOpenSlots) )
-	
-
-	exit(0)
+	#for idx, ele in enumerate(participants):
+	#	print ele.getOpenTimeSlot()
 	return participants
 
 

@@ -191,22 +191,24 @@ def createRfcTimestamp(timestamp):
 #Input: RFC339 timestamp
 #Return: google timestamp
 def rfcToGoogleTimestamp(rfcTS):
-    #Split RFC timestamp into individual parts
-    rfcSplit = re.split('[-]', rfcTS)
-    day = rfcSplit[2]
-    day = re.split('T', day)
-    time = day[1]
-    day = int(day[0])
-    month = rfcSplit[1]
-    monthInt = int(month)
-    year = rfcSplit[0]
-    yearInt = int(year)
-    weekday = findDayOfWeek(day, monthInt, yearInt)
-
-    #Assemble timestamp in google format
-    #Tue Jan 26 2016 07:00:00 GMT-0800 (PST)
-    googleTS = weekday + " " + month + " " + year + " " + time + " GMT-800 (PST)"
-    return googleTS
+	#Split RFC timestamp into individual parts
+	rfcSplit = re.split('[-]', rfcTS)
+	day = rfcSplit[2]
+	day = re.split('T', day)
+	time = day[1]
+	day = day[0]
+	dayInt = int(day)
+	month = rfcSplit[1]
+	monthInt = int(month)
+	monthLetter = monthNumToStr(month)
+	year = rfcSplit[0]
+	yearInt = int(year)
+	weekday = findDayOfWeek(dayInt, monthInt, yearInt)
+	
+	#Assemble timestamp in google format
+	#Tue Jan 26 2016 07:00:00 GMT-0800 (PST)
+	googleTS = weekday + " " + monthLetter + " " + day + " " + year + " " + time + " GMT-800 (PST)"
+	return googleTS
 
 
 #===================================================================================

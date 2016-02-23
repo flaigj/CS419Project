@@ -30,13 +30,12 @@ def createMeetingMatrix():
 
 	#Get participants data from Google API call
 	participantData = google.getParticipantData(timeWindowData)
-	
+
 	# parseGoogleTime returns class object for getday - getYear
 	#Parse start and end times of timeWindow provided by Actor and store in object GoogleTime
 	timeWindowStart = func.parseGoogleTime(timeWindowData[0])
 	timeWindowEnd = func.parseGoogleTime(timeWindowData[1])
 	
-	# 
 	#Calculate the number of 30 minute slots in timeWindow
 	minutesRange = func.hoursRange(timeWindowStart, timeWindowEnd)
 	
@@ -44,7 +43,7 @@ def createMeetingMatrix():
 	timeWindowSlots = func.createTimeSlots(timeWindowStart, timeWindowEnd, 30)
 	numOfWindowSlots = len(timeWindowSlots)
 	numOfParticipants = len(participantData)
-	
+
 	#Create meeting matrix for each timeWindowSlot and participant
 	meetingMatrix = list()	#binary matrix displaying availability for all participants
 	for i in range(0, numOfParticipants):	
