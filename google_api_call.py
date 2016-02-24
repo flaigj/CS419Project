@@ -6,16 +6,24 @@ import user_interface as ui
 import functions as func
 
 #Save each participant's Google Calendar data in an array of type Participants
-class Participants:
-    def __init__(self, name, openTimeSlot):
-        self.name = name
-        self.openTimeSlot = openTimeSlot
+class Participant:
+    def __init__(self, email, eventSummary, startTime, endTime):
+        self.email = email
+        self.eventSummary = eventSummary
+        self.startTime = startTime
+        self.endTime = endTime
 
-    def getOpenTimeSlot(self):
-        return self.openTimeSlot
+    def getEmail(self):
+        return self.email
 
-    def getName(self):
-        return self.name
+    def getEventSummary(self):
+        return self.eventSummary
+
+    def getStartTime(self):
+        return self.startTime
+
+    def getEndTime(self):
+        return self.endTime
 
 
 def getParticipantData(timeWindow):
@@ -25,9 +33,8 @@ def getParticipantData(timeWindow):
 	startTimestamp = func.createRfcTimestamp(timeWindow[0])
 	endTimestamp = func.createRfcTimestamp(timeWindow[1])
 
-	#Make Google API call
+	#Get Google API data
 	for idxEmail, eleEmail in enumerate(emailList):  #for each email address (Participant)
-		slotsBusy = list()
 		try:
 			response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[idxEmail]+"/events?timeMin="+startTimestamp+"&timeMax="+endTimestamp+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
 		except urllib2.HTTPError, e:
@@ -50,60 +57,77 @@ def getParticipantData(timeWindow):
 				eventStartRfcTimestamp = responseJson['items'][idxEvent]['start']['dateTime']
 				eventEndRfcTimestamp = responseJson['items'][idxEvent]['end']['dateTime']
 				eventSummary = responseJson['items'][idxEvent]['summary']
+				email = responseJson['items'][idxEvent]['organizer']['email']
 				#print eventStartRfcTimestamp, eventSummary
 		
 				#Convert RFC timestamp to Google timestamp format
 				eventStartGoogleTimestamp = func.rfcToGoogleTimestamp(eventStartRfcTimestamp)
 				eventEndGoogleTimestamp = func.rfcToGoogleTimestamp(eventEndRfcTimestamp)
 
-				#Duration of Even
-				startTimePosix = func.timeStrToPosix(eventStartGoogleTimestamp)
-				endTimePosix = func.timeStrToPosix(eventEndGoogleTimestamp)
-				durationSeconds = endTimePosix - startTimePosix
-				#print 'durationSeconds = ', durationSeconds,eventStartGoogleTimestamp, eventSummary
-
+				#Determine if event is recurring
 				#If googleTS is < timeWindow start, it's a recurring event. Change event date
 				eventStartPosixTimestamp = func.timeStrToPosix(eventStartGoogleTimestamp)
+				eventEndPosixTimestamp = func.timeStrToPosix(eventEndGoogleTimestamp)
 				timeWindowStartPosix = func.timeStrToPosix(timeWindow[0])
 				timeWindowEndPosix = func.timeStrToPosix(timeWindow[1])
 				if(eventStartPosixTimestamp < timeWindowStartPosix):
+					additionalSlots = list()	#if event duration > 30 mins
 					#eventStartGoogleTimestamp = timeWindow[0]	#timeWindow already as Google TS
 
 					#Add recurring event to each day of the time window
 					timeWindowDays = func.numOfTimeWindowDays(timeWindowStartPosix, timeWindowEndPosix)
 					for i in range(0, timeWindowDays + 1): #days to add 
 						if (i == 0):
-							event = func.changeEventDate(timeWindow[0], eventStartGoogleTimestamp)
-							recurringEvent.append(event)
+							eventStart = func.changeEventDate(timeWindow[0], eventStartGoogleTimestamp)
+							eventEnd = func.changeEventDate(timeWindow[0], eventEndGoogleTimestamp)
+							#recurringEvent.append(event)
+							participants.append(Participant(email, eventSummary,
+							eventStart, eventEnd))
 						else:
-							eventPosix = func.timeStrToPosix(event)
+							eventPosix = func.timeStrToPosix(eventStart)
 							eventPosix += 86400	#add one day in seconds
-							event = posixToTimeStr(eventPosix)		
-							recurringEvent.append(event)
-						print i, event
+							eventStart = func.posixToTimeStr(eventPosix)		
+							eventEnd = func.changeEventDate(eventStart, eventEndGoogleTimestamp)
+							#recurringEvent.append(event)
 
-				if durationSeconds == 1800:	#duraction is 30 minutes
-					#print '\n30 mins\n', eventStartGoogleTimestamp, '\n' 
-					slotsBusy.append(eventStartGoogleTimestamp)	
-				else:
-					slotCount = int(durationSeconds / 1800)	#number of 30 minute slots
-					slotsBusy.append(eventStartGoogleTimestamp)	#1st entry in proper form
-					for i in range(1, slotCount):
-						#print '\n60 mins'
-						#print eventStartGoogleTimestamp, 'google TS before' 
-						posixTime = func.timeStrToPosix(eventStartGoogleTimestamp)	#Google TS to Posix
-						increase = increase + 1800
-						#print 'increase = ', increase
-						posixTime = posixTime + increase	#increment by 30 minutes
-						eventStartGoogleTimestamp = func.posixToTimeStr(posixTime)
-						#print eventStartGoogleTimestamp, 'google TS after' 
-						slotsBusy.append(eventStartGoogleTimestamp)	
-						#print 'posixToPST = ', eventStartGoogleTimestamp
+							participants.append(Participant(email, eventSummary,
+							eventStart, eventEnd))
+						#print i, eventStart, eventSummary
+
+		print '\n=============================='
+		for idx, ele in enumerate(participants):
+			print ele.getStartTime(), ele.getEventSummary()
+
+				#else:	#event is not recurring
+					
+
+						##If event duration > 30 mins, add additional 30 min slots
+						#startTimePosix = func.timeStrToPosix(eventStartGoogleTimestamp)
+						#endTimePosix = func.timeStrToPosix(eventEndGoogleTimestamp)
+						#durationSeconds = endTimePosix - startTimePosix
+
+						#if durationSeconds == 1800:	#duraction is 30 minutes
+						#	#print '\n30 mins\n', eventStartGoogleTimestamp, '\n' 
+						#	additionalSlots.append(eventStartGoogleTimestamp)	
+						#else:
+						#	slotCount = int(durationSeconds / 1800)	#number of 30 minute slots
+						#	additionalSlots.append(eventStartGoogleTimestamp)	#1st entry in proper form
+						#	for i in range(1, slotCount):
+						#		#print '\n60 mins'
+						#		#print eventStartGoogleTimestamp, 'google TS before' 
+						#		posixTime = func.timeStrToPosix(eventStartGoogleTimestamp)	#Google TS to Posix
+						#		increase = increase + 1800
+						#		#print 'increase = ', increase
+						#		posixTime = posixTime + increase	#increment by 30 minutes
+						#		eventStartGoogleTimestamp = func.posixToTimeStr(posixTime)
+						#		#print eventStartGoogleTimestamp, 'google TS after' 
+						#		additionalSlots.append(eventStartGoogleTimestamp)	
+						#		#print 'posixToPST = ', eventStartGoogleTimestamp
 							
 
 
 
-		participants.append( Participants(emailList[idxEmail], slotsBusy) )
+		#participants.append( Participants(emailList[idxEmail], additionalSlots) )
 
 	#for idx, ele in enumerate(recurringEvent):
 	#	print ele
