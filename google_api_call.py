@@ -72,7 +72,6 @@ def getParticipantData(timeWindow):
 				timeWindowEndPosix = func.timeStrToPosix(timeWindow[1])
 				if(eventStartPosixTimestamp < timeWindowStartPosix):
 					additionalSlots = list()	#if event duration > 30 mins
-					#eventStartGoogleTimestamp = timeWindow[0]	#timeWindow already as Google TS
 
 					#Add recurring event to each day of the time window
 					timeWindowDays = func.numOfTimeWindowDays(timeWindowStartPosix, timeWindowEndPosix)
@@ -80,7 +79,6 @@ def getParticipantData(timeWindow):
 						if (i == 0):
 							eventStart = func.changeEventDate(timeWindow[0], eventStartGoogleTimestamp)
 							eventEnd = func.changeEventDate(timeWindow[0], eventEndGoogleTimestamp)
-							#recurringEvent.append(event)
 							participants.append(Participant(email, eventSummary,
 							eventStart, eventEnd))
 						else:
@@ -88,18 +86,15 @@ def getParticipantData(timeWindow):
 							eventPosix += 86400	#add one day in seconds
 							eventStart = func.posixToTimeStr(eventPosix)		
 							eventEnd = func.changeEventDate(eventStart, eventEndGoogleTimestamp)
-							#recurringEvent.append(event)
 
 							participants.append(Participant(email, eventSummary,
 							eventStart, eventEnd))
 						#print i, eventStart, eventSummary
 
-		print '\n=============================='
-		for idx, ele in enumerate(participants):
-			print ele.getStartTime(), ele.getEventSummary()
-
-				#else:	#event is not recurring
-					
+				else:	#event is not recurring
+					participants.append(Participant(email, eventSummary,
+					eventStartGoogleTimestamp, eventEndGoogleTimestamp))
+						
 
 						##If event duration > 30 mins, add additional 30 min slots
 						#startTimePosix = func.timeStrToPosix(eventStartGoogleTimestamp)
@@ -124,6 +119,10 @@ def getParticipantData(timeWindow):
 						#		additionalSlots.append(eventStartGoogleTimestamp)	
 						#		#print 'posixToPST = ', eventStartGoogleTimestamp
 							
+
+		print '\n=============================='
+		for idx, ele in enumerate(participants):
+			print ele.getStartTime(), ele.getEventSummary()
 
 
 
