@@ -35,6 +35,8 @@ def getParticipantData(timeWindow):
 
 	#Get Google API data
 	for idxEmail, eleEmail in enumerate(emailList):  #for each email address (Participant)
+		events = list()
+
 		try:
 			response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[idxEmail]+"/events?timeMin="+startTimestamp+"&timeMax="+endTimestamp+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
 		except urllib2.HTTPError, e:
@@ -48,7 +50,6 @@ def getParticipantData(timeWindow):
 		#Find Participant's scheduled meetings during timeWindow
 		#print responseJson['items'][0]['start']['dateTime']
 		#print responseJson['items']
-		increase = 0
 		recurringEvent = list()
 		for idxEvent, eleEvent in enumerate(responseJson['items']):	#for each event
 			if(eleEvent['status'] == 'confirmed' and	#ignore cancelled appointments
@@ -79,50 +80,58 @@ def getParticipantData(timeWindow):
 						if (i == 0):
 							eventStart = func.changeEventDate(timeWindow[0], eventStartGoogleTimestamp)
 							eventEnd = func.changeEventDate(timeWindow[0], eventEndGoogleTimestamp)
-							participants.append(Participant(email, eventSummary,
-							eventStart, eventEnd))
+							event = [email, eventSummary, eventStart, eventEnd]
+							events.append(event)
 						else:
 							eventPosix = func.timeStrToPosix(eventStart)
 							eventPosix += 86400	#add one day in seconds
 							eventStart = func.posixToTimeStr(eventPosix)		
 							eventEnd = func.changeEventDate(eventStart, eventEndGoogleTimestamp)
 
-							participants.append(Participant(email, eventSummary,
-							eventStart, eventEnd))
+							event = [email, eventSummary, eventStart, eventEnd]
+							events.append(event)
 						#print i, eventStart, eventSummary
 
 				else:	#event is not recurring
-					participants.append(Participant(email, eventSummary,
-					eventStartGoogleTimestamp, eventEndGoogleTimestamp))
+					event = [email, eventSummary, eventStartGoogleTimestamp, eventEndGoogleTimestamp]
+					events.append(event)
 						
+		#Add additional 30 minute slots
+		#If event duration > 30 mins, add additional 30 min slots
+		for idxEvent, event in enumerate(events):
+			startTimePosix = func.timeStrToPosix(event[2])
+			endTimePosix = func.timeStrToPosix(event[3])
+			duration = endTimePosix - startTimePosix
+			
+			email = event[0]
+			summary = event[1]
+			startTime = event[2]
+			endTime = event[3]
 
-						##If event duration > 30 mins, add additional 30 min slots
-						#startTimePosix = func.timeStrToPosix(eventStartGoogleTimestamp)
-						#endTimePosix = func.timeStrToPosix(eventEndGoogleTimestamp)
-						#durationSeconds = endTimePosix - startTimePosix
+			if duration > 1800:		#duration > 30 minutes
+				slotCount = int(duration / 1800) - 1	#number of 30 minute slots to add
+				increase = 0
+				for i in range(slotCount):
+					#print 'start = ', startTime, summary
+					posixTime = func.timeStrToPosix(startTime)	#Google TS to Posix
+					increase = increase + 1800
+					posixTime = posixTime + increase	#increment by 30 minutes
+					startTime = func.posixToTimeStr(posixTime)
+					event = [email, summary, startTime, endTime]
+					events.append(event)		
+					#print 'end = ', startTime, summary
+				increase = 0
 
-						#if durationSeconds == 1800:	#duraction is 30 minutes
-						#	#print '\n30 mins\n', eventStartGoogleTimestamp, '\n' 
-						#	additionalSlots.append(eventStartGoogleTimestamp)	
-						#else:
-						#	slotCount = int(durationSeconds / 1800)	#number of 30 minute slots
-						#	additionalSlots.append(eventStartGoogleTimestamp)	#1st entry in proper form
-						#	for i in range(1, slotCount):
-						#		#print '\n60 mins'
-						#		#print eventStartGoogleTimestamp, 'google TS before' 
-						#		posixTime = func.timeStrToPosix(eventStartGoogleTimestamp)	#Google TS to Posix
-						#		increase = increase + 1800
-						#		#print 'increase = ', increase
-						#		posixTime = posixTime + increase	#increment by 30 minutes
-						#		eventStartGoogleTimestamp = func.posixToTimeStr(posixTime)
-						#		#print eventStartGoogleTimestamp, 'google TS after' 
-						#		additionalSlots.append(eventStartGoogleTimestamp)	
-						#		#print 'posixToPST = ', eventStartGoogleTimestamp
-							
+
+
+
+
 
 		print '\n=============================='
-		for idx, ele in enumerate(participants):
-			print ele.getStartTime(), ele.getEventSummary()
+		for idx, ele in enumerate(events):
+			print ele[2], ele[1]
+
+
 
 
 
