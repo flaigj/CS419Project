@@ -55,12 +55,12 @@ def createMeetingMatrix():
 		timeSlots = list()	#temp storage for each participant's time slot
 		#print '----------------------------'
 		#print elem.getName()
-		numOfParticipantSlots = len(participantData[index].getOpenTimeSlot())
+		numOfParticipantSlots = len(participantData[index].getBusyTimeSlot())
 		#print 'numOfParticipantSlots = ', numOfParticipantSlots
 	
 		while(index2 < numOfWindowSlots):		#Actor's desired meeting slots
 			windowSlot = timeWindowSlots[index2]
-			participantSlot = participantData[index].getOpenTimeSlot()
+			participantSlot = participantData[index].getBusyTimeSlot()
 	
 			#Compare participant's time slot to Actor's desired meeting slots
 			#print 'index3 = ', index3

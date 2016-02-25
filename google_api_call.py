@@ -7,23 +7,21 @@ import functions as func
 
 #Save each participant's Google Calendar data in an array of type Participants
 class Participant:
-    def __init__(self, email, eventSummary, startTime, endTime):
-        self.email = email
-        self.eventSummary = eventSummary
-        self.startTime = startTime
-        self.endTime = endTime
+	#eventData = [ email, eventSummary[], eventStartGoogleTimestamp[], eventEndGoogleTimestamp[] ]
+    def __init__(self, eventData):
+        self.eventData = eventData
+
+    def getEventData(self):
+        return self.eventData
 
     def getEmail(self):
-        return self.email
+        return self.eventData[0][0]
 
-    def getEventSummary(self):
-        return self.eventSummary
-
-    def getStartTime(self):
-        return self.startTime
-
-    def getEndTime(self):
-        return self.endTime
+    def getBusyTimeSlot(self):
+		busyTimeSlot = list()
+		for idx, ele in enumerate(self.eventData):
+			busyTimeSlot.append(ele[2])
+	        return busyTimeSlot
 
 
 def getParticipantData(timeWindow):
@@ -125,26 +123,20 @@ def getParticipantData(timeWindow):
 		#Sort events by start date
 		eventsSorted = sorted(events, key=lambda startDate: startDate[2])
 
-		print '\n========== Un-Sorted ===================='
-		for idx, ele in enumerate(events):
-			print ele[2], ele[1]
+		#print '\n========== Un-Sorted ===================='
+		#for idx, ele in enumerate(events):
+		#	print ele[2], ele[1]
 
-		print '\n============ Sorted =================='
-		for idx, ele in enumerate(eventsSorted):
-			print ele[2], ele[1]
+		#print '\n============ Sorted =================='
+		#for idx, ele in enumerate(eventsSorted):
+		#	print ele[2], ele[1]
 	
-
-
-
-		#participants.append( Participants(emailList[idxEmail], additionalSlots) )
-
-	#for idx, ele in enumerate(recurringEvent):
-	#	print ele
-
-
-	#for idx, ele in enumerate(participants):
-	#	print ele.getOpenTimeSlot()
-	exit(0)
+		
+		#Store participant's event data to Participant object
+		participants.append( Participant(eventsSorted) )
+					
+		
+	#print participants[idxEmail].getBusyTimeSlot()
 	return participants
 
 

@@ -26,7 +26,7 @@ timeWindowSlots = meetingAvailability.getTimeWindowSlots()
 #Print matrix by participant
 print '\nMeeting Matrix'
 for index, elem in enumerate(participants):
-		print meetingMatrix[index], elem.getName()
+		print meetingMatrix[index], elem.getEmail()
 print '\n'
 
 
@@ -72,7 +72,7 @@ def useCaseTwo():
 	#Display times when participants are available during the entire timeWindow
 	print 'Use Case Two - participant(s) available during the entire time window'
 	for i in availableParticipants:
-		print participants[i].getName()
+		print participants[i].getEmail()
 	print '\n'
 
 
@@ -88,7 +88,7 @@ def useCaseOne():
 	index = 0
 	#name = 'Jason'				        
 	#for index, elem in enumerate(participants):						               
-	#   if(elem.getName() == name):
+	#   if(elem.getEmail() == name):
 	#      break;        
 	for i in range(0, numOfWindowSlots):	                  
 	   if meetingMatrix[index][i] == 0:			                    
