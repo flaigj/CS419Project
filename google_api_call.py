@@ -122,16 +122,17 @@ def getParticipantData(timeWindow):
 					#print 'end = ', startTime, summary
 				increase = 0
 
+		#Sort events by start date
+		eventsSorted = sorted(events, key=lambda startDate: startDate[2])
 
-
-
-
-
-		print '\n=============================='
+		print '\n========== Un-Sorted ===================='
 		for idx, ele in enumerate(events):
 			print ele[2], ele[1]
 
-
+		print '\n============ Sorted =================='
+		for idx, ele in enumerate(eventsSorted):
+			print ele[2], ele[1]
+	
 
 
 

@@ -398,7 +398,14 @@ def numOfTimeWindowDays(start, end):
 def changeEventDate(newTS, oldTS):
 	newSplit = newTS.split()
 	oldSplit = oldTS.split()
-	ts = newSplit[0] + ' ' + newSplit[1] + ' ' + newSplit[2] + ' ' + newSplit[3] + ' ' + oldSplit[4] + ' ' + oldSplit[5] + ' ' + oldSplit[6]
+	
+	day = int(newSplit[2])
+	month =  int(monthStrToNum(newSplit[1]))
+	year = int(newSplit[3])
+
+	dayStr = findDayOfWeek(day, month, year)	#find new day of the week	
+
+	ts = dayStr + ' ' + newSplit[1] + ' ' + newSplit[2] + ' ' + newSplit[3] + ' ' + oldSplit[4] + ' ' + oldSplit[5] + ' ' + oldSplit[6]
 	return ts
 
 
