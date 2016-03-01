@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset='utf-8'>
+	<title>Menu Page</title>
+</head>
+<body>
+<h1>Meeting Matrix</h1>
+{{ problem }}
+{% for m in matrix %}
+{{ m }}<br>
+{% endfor %}<br>
+{% for s in slots %}
+{{ s }}<br>
+{% endfor %}
+</body>
+</html>

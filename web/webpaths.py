@@ -3,5 +3,5 @@ import webapp2
 app = webapp2.WSGIApplication([
 	('/', 'base_page.BaseHandler'),
 	('/input', 'base_page.ActorInput'),	
-	('/google-api', 'google_api_call.FrankTest'),		
+	('/google-api', 'use_cases.FrankTest'),		
 	], debug=True)

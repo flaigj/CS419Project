@@ -5,7 +5,7 @@ import re
 import webapp2
 import os
 import jinja2
-#import user_interface as ui
+import functions as func
 
 JINJA_ENVIRONMENT = jinja2.Environment(
 	loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'),
@@ -13,259 +13,159 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 	autoescape=True)
 
 #Save each participant's Google Calendar data in an array of type Participants
-class Participants:
-    def __init__(self, name, openTimeSlot):
-        self.name = name
-        self.openTimeSlot = openTimeSlot
+class Participant:
+	#eventData = [ email, eventSummary[], eventStartGoogleTimestamp[], eventEndGoogleTimestamp[] ]
+    def __init__(self, eventData):
+        self.eventData = eventData
 
-    def getOpenTimeSlot(self):
-        return self.openTimeSlot
+    def getEventData(self):
+        return self.eventData
 
-    def getName(self):
-        return self.name
+    def getEmail(self):
+        return self.eventData[0][0]
 
-#convert three letter month to string number 
-def getMonth(month):
-	if "Jan" in month:
-		month = "01"
-	elif "Feb" in month:
-		month = "02"
-	elif "Mar" in month:
-		month = "03"
-	elif "Apr" in month:
-		month = "04"
-	elif "May" in month:
-		month = "05"
-	elif "Jun" in month:
-		month = "06"
-	elif "Jul" in month:
-		month = "07"
-	elif "Aug" in month:
-		month = "08"
-	elif "Sep" in month:
-		month = "09"
-	elif "Oct" in month:
-		month = "10"
-	elif "Nov" in month:
-		month = "11"
-	elif "Dec" in month:
-		month = "12"
-	return month
+    def getBusyTimeSlot(self):
+		busyTimeSlot = list()
+		for idx, ele in enumerate(self.eventData):
+			busyTimeSlot.append(ele[2])
+	        return busyTimeSlot
 
-def getParticipantData(timeWindow):
-	#Google API Call code goes here
 
+def getParticipantData(startWindow, endWindow, email):
 	participants = list()
-	#participants = ui.getName()
-	emailInput = "leima@oregonstate.edu groupnineemail@gmail.com" #will take in from user input (only works with valid PUBLIC calendars)
 	#emailInput = ui.getEmailAddr()
-	
-	myDate = timeWindow.split()
+	#emailList = emailInput.split() #create email list delimited by space character
+	emailList = email.split()
+	startTimestamp = func.createRfcTimestamp(startWindow)
+	endTimestamp = func.createRfcTimestamp(endWindow)
 
-	mymonth = getMonth(myDate[1])
-	dateInput =  myDate[3] + "-" + mymonth + "-" + myDate[2] 
+	#Get Google API data
+	for idxEmail, eleEmail in enumerate(emailList):  #for each email address (Participant)
+		events = list()
 
-	#dateInput = "2016-01-28" #will take in from user input 
-	earliestTime = dateInput + "T00:00:00-08:00"  # -08:00 is PST; -07:00 is PDT (might encounter PDT if user picks a far off date)
-	latestTime = dateInput + "T23:59:00-08:00"
-
-	emailList = emailInput.split() #create email list delimited by space character
-	#print(emailList)
-
-	#splits the date the user inputted into an array
-	dateInputSplit = re.split('[-]', dateInput)
-
-	#convert numerical month to three-letter text
-	if "01" in dateInputSplit[1]:
-		month = "Jan"
-	elif "02" in dateInputSplit[1]:
-		month = "Feb"
-	elif "03" in dateInputSplit[1]:
-		month = "Mar"
-	elif "04" in dateInputSplit[1]:
-		month = "Apr"
-	elif "05" in dateInputSplit[1]:
-		month = "May"
-	elif "06" in dateInputSplit[1]:
-		month = "Jun"
-	elif "07" in dateInputSplit[1]:
-		month = "Jul"
-	elif "08" in dateInputSplit[1]:
-		month = "Aug"
-	elif "09" in dateInputSplit[1]:
-		month = "Sep"
-	elif "10" in dateInputSplit[1]:
-		month = "Oct"
-	elif "11" in dateInputSplit[1]:
-		month = "Nov"
-	elif "12" in dateInputSplit[1]:
-		month = "Dec"
-
-	dateModified = month + " " + dateInputSplit[2] + " " + dateInputSplit[0]
-	#print dateModified
-
-	#for each email address
-	for index, elem in enumerate(emailList):
-		# API call to Google Calendars API; timeMin is set to 00:00 and timeMax is set to 23:59, so we're going to get all events of that day
-		#response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[index]+"/events?timeMin="+earliestTime+"&timeMax="+latestTime+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
-		
 		try:
-
-			# API call to Google Calendars API; timeMin is set to 00:00 and timeMax is set to 23:59, so we're going to get all events of that day
-			response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[index]+"/events?timeMin="+earliestTime+"&timeMax="+latestTime+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
-			#print response
+			response = urllib2.urlopen("https://www.googleapis.com/calendar/v3/calendars/"+emailList[idxEmail]+"/events?timeMin="+startTimestamp+"&timeMax="+endTimestamp+"&key=AIzaSyB7IsERaXNIMiRgMAB_tujhdzNVmxpq0KA").read()
 		except urllib2.HTTPError, e:
-			print "\nERROR: We could not retrieve the calendar for", emailList[index]
+			print "\nERROR: We could not retrieve the calendar for", emailList[idxEmail]
 			print "Please make sure the email address is valid and the calendar is public\n"
-			#print e
-			#print "test"
-			continue
-		#print "Testing"
+			exit(1)	
 
 		responseJson = json.loads(response) #converts to JSON object
+		#startTime = responseJson['items'][0]['start']
 
-		#print(response) # use this to see structure of JSON
-
-
-		#start with all time slots
-		allOpenSlots = ['00:00:00', '00:30:00','01:00:00', '01:30:00', '02:00:00', '02:30:00',
-						'03:00:00', '03:30:00','04:00:00', '04:30:00', '05:00:00', '05:30:00',
-						'06:00:00', '06:30:00','07:00:00', '07:30:00', '08:00:00', '08:30:00',
-						'09:00:00', '09:30:00','10:00:00', '10:30:00', '11:00:00', '11:30:00',
-						'12:00:00', '12:30:00','13:00:00', '13:30:00', '14:00:00', '14:30:00',
-						'15:00:00', '15:30:00','16:00:00', '16:30:00', '17:00:00', '17:30:00',
-						'18:00:00', '18:30:00','19:00:00', '19:30:00', '20:00:00', '20:30:00',
-						'21:00:00', '21:30:00','22:00:00', '22:30:00', '23:00:00', '23:30:00']
-
+		#Find Participant's scheduled meetings during timeWindow
+		#print responseJson['items'][0]['start']['dateTime']
+		#print responseJson['items']
+		recurringEvent = list()
+		for idxEvent, eleEvent in enumerate(responseJson['items']):	#for each event
+			if(eleEvent['status'] == 'confirmed' and	#ignore cancelled appointments
+			'dateTime' in responseJson['items'][idxEvent]['start']):	#ignore all day events
+				
+				eventStartRfcTimestamp = responseJson['items'][idxEvent]['start']['dateTime']
+				eventEndRfcTimestamp = responseJson['items'][idxEvent]['end']['dateTime']
+				eventSummary = responseJson['items'][idxEvent]['summary']
+				email = responseJson['items'][idxEvent]['organizer']['email']
+				#print eventStartRfcTimestamp, eventSummary
 		
-		#traverse through the items to find the start dates of each event and then remove them from allOpenSlots array
-		for idx, item in enumerate(responseJson['items']):
-			startDateTime = responseJson['items'][idx]['start']
-			if 'dateTime' in startDateTime: #gets the start time of the first event returned
-				takenDateTime = startDateTime['dateTime']
-				#print(takenDateTime)
+				#Convert RFC timestamp to Google timestamp format
+				eventStartGoogleTimestamp = func.rfcToGoogleTimestamp(eventStartRfcTimestamp)
+				eventEndGoogleTimestamp = func.rfcToGoogleTimestamp(eventEndRfcTimestamp)
 
-			### what to do if all day event with no time? has 'date' as name (key) instead of 'dateTime'
+				#Determine if event is recurring
+				#If googleTS is < timeWindow start, it's a recurring event. Change event date
+				eventStartPosixTimestamp = func.timeStrToPosix(eventStartGoogleTimestamp)
+				eventEndPosixTimestamp = func.timeStrToPosix(eventEndGoogleTimestamp)
+				timeWindowStartPosix = func.timeStrToPosix(startWindow)
+				timeWindowEndPosix = func.timeStrToPosix(endWindow)
+				if(eventStartPosixTimestamp < timeWindowStartPosix):
+					additionalSlots = list()	#if event duration > 30 mins
 
+					#Add recurring event to each day of the time window
+					timeWindowDays = func.numOfTimeWindowDays(timeWindowStartPosix, timeWindowEndPosix)
+					for i in range(0, timeWindowDays + 1): #days to add 
+						if (i == 0):
+							eventStart = func.changeEventDate(startWindow, eventStartGoogleTimestamp)
+							eventEnd = func.changeEventDate(startWindow, eventEndGoogleTimestamp)
+							event = [email, eventSummary, eventStart, eventEnd]
+							events.append(event)
+						else:
+							eventPosix = func.timeStrToPosix(eventStart)
+							eventPosix += 86400	#add one day in seconds
+							eventStart = func.posixToTimeStr(eventPosix)		
+							eventEnd = func.changeEventDate(eventStart, eventEndGoogleTimestamp)
 
-				#discards the date, leaves time of event
-				if "T" in takenDateTime:
-				    param, takenTimeSlots = takenDateTime.split("T", 1)
+							event = [email, eventSummary, eventStart, eventEnd]
+							events.append(event)
+						#print i, eventStart, eventSummary
 
-				#discards the time offset (e.g. -8:00)
-				if "-" in takenDateTime:
-				    takenTimeSlotsTrimmed, paramdiscard = takenTimeSlots.split("-", 1)
+				else:	#event is not recurring
+					event = [email, eventSummary, eventStartGoogleTimestamp, eventEndGoogleTimestamp]
+					events.append(event)
+						
+		#Add additional 30 minute slots
+		#If event duration > 30 mins, add additional 30 min slots
+		for idxEvent, event in enumerate(events):
+			startTimePosix = func.timeStrToPosix(event[2])
+			endTimePosix = func.timeStrToPosix(event[3])
+			duration = endTimePosix - startTimePosix
+			
+			email = event[0]
+			summary = event[1]
+			startTime = event[2]
+			endTime = event[3]
 
-				    #print ("takenTimeSlotsTrimmed", takenTimeSlotsTrimmed)
+			if duration > 1800:		#duration > 30 minutes
+				slotCount = int(duration / 1800) - 1	#number of 30 minute slots to add
+				increase = 0
+				for i in range(slotCount):
+					#print 'start = ', startTime, summary
+					posixTime = func.timeStrToPosix(startTime)	#Google TS to Posix
+					increase = increase + 1800
+					posixTime = posixTime + increase	#increment by 30 minutes
+					startTime = func.posixToTimeStr(posixTime)
+					event = [email, summary, startTime, endTime]
+					events.append(event)		
+					#print 'end = ', startTime, summary
+				increase = 0
 
-				takenTimeParts = re.split('[-:]', takenTimeSlotsTrimmed)
-				#print("takenTimeParts", takenTimeParts)
+		#Sort events by start date
+		eventsSorted = sorted(events, key=lambda startDate: startDate[2])
 
-				#turn start time string into integer (8:30 will be 850)
-				takenStartTimeInt = int(takenTimeParts[0]) * 100
-				takenStartTimeInt += int(takenTimeParts[1]) * 50 / 30
+		#print '\n========== Un-Sorted ===================='
+		#for idx, ele in enumerate(events):
+		#	print ele[2], ele[1]
 
-				#print(takenStartTimeInt)
-
-			endDateTime = responseJson['items'][idx]['end']
-			if 'dateTime' in endDateTime: #gets the end time of the first event returned
-				takenEndDateTime = endDateTime['dateTime']
-				#print(takenEndDateTime)
-
-				if "T" in takenEndDateTime:
-					param, takenEndTime = takenEndDateTime.split("T",1)
-
-				takenEndTimeParts = re.split('[-:]', takenEndTime)
-				#print(takenEndTimeParts)
-
-				#turns end time string into integer (8:30 will be 850)
-				takenEndTimeInt = int(takenEndTimeParts[0]) * 100
-				takenEndTimeInt += int(takenEndTimeParts[1]) * 50 / 30
-				#print(takenEndTimeInt)
-
-				#checks to see if the event lasted for more than a half an hour.
-				#if so, we need to remove those times from allOpenSlots array
-				eventSpan = takenEndTimeInt - takenStartTimeInt
-				if eventSpan > 50: #if the span is greater than a half hour
-					halfHourIncrements = (eventSpan/50) - 1
-
-					#loop that adds taken half hour slots to takenIncrementsStr
-					for i in range(halfHourIncrements):
-						takenStartTimeInt += 50
-						takenIncrementsStr = ""
-
-						# if it is a XX:00 (e.g. turn 800 to 8:00)
-						if (takenStartTimeInt % 100) == 0:
-							if takenStartTimeInt < 1000:
-								takenIncrementsStr += "0" + (str(takenStartTimeInt/100))
-							else:
-								takenIncrementsStr += (str(takenStartTimeInt/100))
-							takenIncrementsStr += (":00")
-
-						# if it is a XX:30 (e.g. turn 850 to 8:30)
-						if (takenStartTimeInt % 100) != 0:
-							takenStartTimeInt -= 50
-							if takenStartTimeInt < 1000:
-								takenIncrementsStr += "0" + (str(takenStartTimeInt/100))
-							else:
-								takenIncrementsStr += (str(takenStartTimeInt/100))
-							takenIncrementsStr += (":30")
-
-						#print("takenIncrements"+takenIncrementsStr)
-
-						#convert to string (needs to match the format of the allOpenSlots)
-						takenTimeSlotsTrimmed += " " + takenIncrementsStr + ":00"
-						#print("taken time slots trimmed"+takenTimeSlotsTrimmed)
-
-						#split into array of times
-						occupiedTimeSlotList = takenTimeSlotsTrimmed.split()
-						#print occupiedTimeSlotList
-
-
-			#if the time of the user's event is present, remove the slot
-			for j, elem in enumerate(occupiedTimeSlotList):
-				if occupiedTimeSlotList[j] in allOpenSlots:  ###########remove the array of times in takenTimeSlots
-					allOpenSlots.remove(occupiedTimeSlotList[j])
-
-		#print(allOpenSlots)
-
-		#always uses "Mon"
-		for k, elem in enumerate(allOpenSlots):
-			allOpenSlots[k] = "Mon " + dateModified + " " +allOpenSlots[k] + " GMT-0800 (PST)"
-
-
-		participants.append( Participants(emailList[index], allOpenSlots) )
-
-
+		#print '\n============ Sorted =================='
+		#for idx, ele in enumerate(eventsSorted):
+		#	print ele[2], ele[1]
+	
+		
+		#Store participant's event data to Participant object
+		participants.append( Participant(eventsSorted) )
+					
+		
+	#print participants[idxEmail].getBusyTimeSlot()
 	return participants
 
-#class timeHandler(webapp2.RequestHandler):
-	template_variables = {}
+
+
 def getTimeWindowData():
-		#Time window -- Actor's input when making the Google API Call
-		#Signature: timeWindow = [startTime, endTime]
-		# print "Enter a time window in the following format: Jan 28 2016 15:30"
-		# timeType = ["start", "finish"]
-		# timeWindow = list()
-		# for x in range(0, 2):
-		# 	ipt = raw_input("Enter a " + timeType[x] + " window: ")
-		# 	timeWindow.append("Mon " + ipt + ":00 GMT-0800 (PST)")
-	#template_variables = {}
+	#Time window -- Actor's input when making the Google API Call
+	#Signature: timeWindow = [startTime, endTime]
+	print "Enter a time window in the following format: Jan 28 2016 15:30"
+	timeType = ["start", "finish"]
+	timeWindow = list()
+	for x in range(0, 2):
+		ipt = raw_input("Enter a " + timeType[x] + " window: ")
+		timeWindow.append("Mon " + ipt + ":00 GMT-0800 (PST)")
+
+	#timeWindow = ["Tue Jan 28 2016 10:30:00 GMT-0800 (PST)",    #dummy data
+	#                "Tue Jan 28 2016 15:00:00 GMT-0800 (PST)"]
 	
-	#def get(self):
-		#template = JINJA_ENVIRONMENT.get_template('time.html')
-		#self.response.write(template.render())
+	#Test names return successfully
+	#for index, elem in enumerate(participants):
+	#	participants[index].getOpenTimeSlot()
 
-		timeWindow = ["Tue Jan 28 2016 10:30:00 GMT-0800 (PST)",    #dummy data
-		                "Tue Jan 28 2016 15:00:00 GMT-0800 (PST)"]
-		
-		#Test names return successfully
-		#for index, elem in enumerate(participants):
-		#	participants[index].getOpenTimeSlot()
+	return timeWindow
 
-		return timeWindow
 
-class FrankTest(webapp2.RequestHandler):
-	def post(self):
-		startDate = self.request.get('startDate')
-		self.response.write(startDate)

@@ -7,20 +7,28 @@
 <body>
 	<h1>Time Window and Participants</h1>
 	<form action="/google-api" method="post">		
-		Start Date <input type="date" name="startDate"></input>
+		<!--Start Date <input type="date" name="startDate"></input>
 		Start Time <input type="time" name="startTime"></input>
 		<br>
 		End Date <input type="date" name="endDate"></input>
-		End Time <input type="time" name="endTime"></input>
+		End Time <input type="time" name="endTime"></input>-->
+		Enter a start time window<input type="text" name="startWindow" />
+		Enter an end time window<input type="text" name="endWindow" />
 		<br>
 
 		<!-- Get participant email based on which use case was chosen -->
 		{% if useCase == '1' %}
 			Use case is 1
+			<input type="hidden" name="usecase" value="1" />
+			Enter a user email<input type="text" name="email"></input>
 		{% else %} {% if useCase == '2' %}
 			Use case is 2
+			<input type="hidden" name="usecase" value="2" />
+			Enter a user email<input type="text" name="email"></input>
 		{% else %} {% if useCase == '3' %}
 			Use case is 3		
+			<input type="hidden" name="usecase" value="3" />
+			Enter a user email<input type="text" name="email"></input>
 		{% endif %}
 		{% endif %}
 		{% endif %}		

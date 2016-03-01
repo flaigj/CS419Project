@@ -22,7 +22,7 @@ class ActorInput(webapp2.RequestHandler):
 		}
 
 		template = JINJA_ENVIRONMENT.get_template('actor-input.html')
-		self.response.write(template.render(template_values))	
+		self.response.write(template.render(template_values))
 
 
 
