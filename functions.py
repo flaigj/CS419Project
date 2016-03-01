@@ -407,16 +407,3 @@ def changeEventDate(newTS, oldTS):
 
 	ts = dayStr + ' ' + newSplit[1] + ' ' + newSplit[2] + ' ' + newSplit[3] + ' ' + oldSplit[4] + ' ' + oldSplit[5] + ' ' + oldSplit[6]
 	return ts
-
-
-
-
-
-
-
-
-
-
-
-
-
