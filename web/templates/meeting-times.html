@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
 	<meta charset='utf-8'>
-	<title>Menu Page</title>
+	<title>Possible meeting times</title>
 </head>
 <body>
-<h1>Meeting Matrix</h1>
-{{ problem }}
+<h1>Possible Meeting Times</h1>
+<!--<h1>Meeting Matrix</h1>
 {% for m in matrix %}
 {{ m }}<br>
-{% endfor %}<br>
+{% endfor %}<br>-->
 {% for s in slots %}
 {{ s }}<br>
 {% endfor %}
+<a href="/">Plan another meeting</a>
 </body>
 </html>

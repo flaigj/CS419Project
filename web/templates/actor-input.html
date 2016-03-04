@@ -2,37 +2,45 @@
 <html lang="en">
 <head>
 	<meta charset='utf-8'>
-	<title>Menu Page</title>
+	<title>Meeting information</title>
 </head>
 <body>
-	<h1>Time Window and Participants</h1>
+	<h1>Meeting information</h1>
 	<form action="/google-api" method="post">		
 		<!--Start Date <input type="date" name="startDate"></input>
 		Start Time <input type="time" name="startTime"></input>
 		<br>
 		End Date <input type="date" name="endDate"></input>
 		End Time <input type="time" name="endTime"></input>-->
-		Enter a start time window<input type="text" name="startWindow" />
-		Enter an end time window<input type="text" name="endWindow" />
-		<br>
+		<fieldset>
+		<legend>Enter a start time window:</legend>
+		Example: Jan 28 2016 10:00<br>
+		<input type="text" name="startWindow" />
+		</fieldset>
+		<fieldset>
+		<legend>Enter an end time window:</legend>
+		Example: Jan 28 2016 17:00<br>
+		<input type="text" name="endWindow" />
+		</fieldset>
 
 		<!-- Get participant email based on which use case was chosen -->
+		<fieldset>
 		{% if useCase == '1' %}
-			Use case is 1
 			<input type="hidden" name="usecase" value="1" />
-			Enter a user email<input type="text" name="email"></input>
+			<legend>Enter a user email:</legend>
+			<input type="text" name="email"></input>
 		{% else %} {% if useCase == '2' %}
-			Use case is 2
 			<input type="hidden" name="usecase" value="2" />
-			Enter a user email<input type="text" name="email"></input>
-		{% else %} {% if useCase == '3' %}
-			Use case is 3		
+			<legend>Enter user emails:</legend>
+			<input type="text" name="email"></input>
+		{% else %} {% if useCase == '3' %}	
 			<input type="hidden" name="usecase" value="3" />
-			Enter a user email<input type="text" name="email"></input>
+			<legend>Enter user emails:</legend>
+			<input type="text" name="email"></input>
 		{% endif %}
 		{% endif %}
 		{% endif %}		
-		<br>
+		</fieldset>
 		<input type="submit" value="Submit" />
 	</form>
 

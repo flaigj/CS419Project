@@ -12,7 +12,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 	extensions=['jinja2.ext.autoescape'],
 	autoescape=True)
 
-class FrankTest(webapp2.RequestHandler):
+class RunUseCases(webapp2.RequestHandler):
 	def post(self):
 		startWindow = self.request.get('startWindow')
 		endWindow = self.request.get('endWindow')
@@ -108,30 +108,12 @@ class FrankTest(webapp2.RequestHandler):
 		problem = ""
 		if (usecase == "1"):
 			slots = useCaseOne()
-			problem = "Problem 1"
 		elif (usecase == "2"):
 			slots = useCaseTwo()
-			problem = "Problem 2"
 		else: 
 			slots = useCaseThree()
-			problem = "Problem 3"
 
-		template_values = {'matrix':meetingMatrix,'slots':slots,'usecase':usecase,'problem':problem}
+		template_values = {'matrix':meetingMatrix,'slots':slots,'usecase':usecase}
 
 		template = JINJA_ENVIRONMENT.get_template('test.html')
 		self.response.write(template.render(template_values))
-		#Print matrix by participant
-		#print '\nMeeting Matrix'
-		#for index, elem in enumerate(participants):
-		#		print meetingMatrix[index], elem.getEmail()
-		#print '\n'
-
-		# create template vars to print matrix in html/jinja
-		#template_variables = []
-		#for index, elem in enumerate(participants):
-		#	testingVar = meetingMatrix[index], elem.getEmail()
-
-		#template_values = {'matrix':meetingMatrix}
-
-		#template = JINJA_ENVIRONMENT.get_template('test.html')
-		#self.response.write(template.render(template_values))
