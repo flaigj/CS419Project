@@ -3,6 +3,7 @@
 import google_api_call as google    #Availble time slot for each individual participant
 import functions as func			#Helper functions
 import datetime
+import sys
 
 class MeetingAvailability:
 	def __init__(self, meetingMatrix, participantData, numOfWindowSlots, timeWindowSlots):
@@ -25,11 +26,24 @@ class MeetingAvailability:
 
 
 def createMeetingMatrix():
-	#Get time window data from Google API call
-	timeWindowData = google.getTimeWindowData()
+	#print "Test Arg length: ", len(sys.argv)
+	#print "Test Args: ", str(sys.argv)
+	if len(sys.argv) >= 4:	#run program with test data
+		startTimeWindow = str(sys.argv[1])
+		endTimeWindow = str(sys.argv[2])
+		timeWindowData = google.getTimeWindowData(startTimeWindow, endTimeWindow) #get timeWindow w/ test data
 
-	#Get participants data from Google API call
-	participantData = google.getParticipantData(timeWindowData)
+		#Create list of test emails from command line
+		emailList = list()
+		if len(sys.argv)>= 4:
+			for x in range(3, len(sys.argv)):	
+				emailList.append(sys.argv[x])	
+		participantData = google.getParticipantData(timeWindowData, emailList)
+	else:	#run program with user data
+		timeWindowData = google.getTimeWindowData(None, None) #get time window data from Google API call
+
+		#Get participants data from Google API call
+		participantData = google.getParticipantData(timeWindowData, None)
 
 	# parseGoogleTime returns class object for getday - getYear
 	#Parse start and end times of timeWindow provided by Actor and store in object GoogleTime

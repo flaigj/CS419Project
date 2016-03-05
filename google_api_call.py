@@ -24,10 +24,14 @@ class Participant:
 	        return busyTimeSlot
 
 
-def getParticipantData(timeWindow):
+def getParticipantData(timeWindow, emails):
+	if emails is not None:	#use test data
+		emailList = emails
+	else:	#use user data
+		emailInput = ui.getEmailAddr()
+		emailList = emailInput.split() #create email list delimited by space character
+
 	participants = list()
-	emailInput = ui.getEmailAddr()
-	emailList = emailInput.split() #create email list delimited by space character
 	startTimestamp = func.createRfcTimestamp(timeWindow[0])
 	endTimestamp = func.createRfcTimestamp(timeWindow[1])
 
@@ -141,19 +145,21 @@ def getParticipantData(timeWindow):
 
 
 
-def getTimeWindowData():
+def getTimeWindowData(startTimeWindow, endTimeWindow):
 	#Time window -- Actor's input when making the Google API Call
 	#Signature: timeWindow = [startTime, endTime]
-	print "Enter a time window in the following format: Jan 28 2016 15:30"
-	timeType = ["start", "finish"]
 	timeWindow = list()
-	for x in range(0, 2):
-		ipt = raw_input("Enter a " + timeType[x] + " window: ")
-		timeWindow.append("Mon " + ipt + ":00 GMT-0800 (PST)")
-
-	#timeWindow = ["Tue Jan 28 2016 10:30:00 GMT-0800 (PST)",    #dummy data
-	#                "Tue Jan 28 2016 15:00:00 GMT-0800 (PST)"]
 	
+	if startTimeWindow is not None and endTimeWindow is not None:	#if arguments are given, then it's test data
+		timeWindow.append("Mon " + startTimeWindow + ":00 GMT-0800 (PST)")
+		timeWindow.append("Mon " + endTimeWindow + ":00 GMT-0800 (PST)")
+	else:	#else it's user data
+		print "Enter a time window in the following format: Jan 28 2016 15:30"
+		timeType = ["start", "finish"]
+		for x in range(0, 2):
+			ipt = raw_input("Enter a " + timeType[x] + " window: ")
+			timeWindow.append("Mon " + ipt + ":00 GMT-0800 (PST)")
+
 	#Test names return successfully
 	#for index, elem in enumerate(participants):
 	#	participants[index].getOpenTimeSlot()
