@@ -115,5 +115,5 @@ class RunUseCases(webapp2.RequestHandler):
 
 		template_values = {'matrix':meetingMatrix,'slots':slots,'usecase':usecase}
 
-		template = JINJA_ENVIRONMENT.get_template('test.html')
+		template = JINJA_ENVIRONMENT.get_template('meeting-times.html')
 		self.response.write(template.render(template_values))
