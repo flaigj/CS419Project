@@ -3,21 +3,29 @@ import unittest
 import use_cases as uc
 import sys
 
+print '\n********************** TESTING BEGINS ***************************'
+print  '******************************************************************\n'
+
+#Test if meeting matrix produces correct binary data
 class testMeetingMatrix(unittest.TestCase):
-	print '\n********************** TESTING BEGINS ***************************'
-	print  '******************************************************************\n'
 	startTime = "Feb 23 2016 08:00"
 	endTime = "Feb 23 2016 15:00"
 
+	#array = [1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1]
+
+	#Correct binary results for the time window specified to the right of it
 	matrixResults = list()
-	array = [1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1]
-	matrixResults.append(array)
+	matrixResults = (
+		[1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1],	#Feb 23 2016 08:00 to Feb 23 2016 15:00
+		[1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1],	#Feb 23 2016 08:00 to Feb 23 2016 15:00
+		[1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1]	#Feb 23 2016 08:00 to Feb 23 2016 15:00
+	)	
 
 	def test_createMeetingMatrix(self):
-		for index, elem in enumerate(uc.participants):
-			print '\n', uc.meetingMatrix[index], elem.getEmail()
-			self.assertEqual(uc.meetingMatrix[index], self.matrixResults[index])
-
+		for idx1, elem1 in enumerate(self.matrixResults):
+			for idx2, elem2 in enumerate(uc.participants):
+				print '\n', uc.meetingMatrix[idx2], elem2.getEmail()
+				self.assertEqual(uc.meetingMatrix[idx2], elem1, ('Failed at matrixResults index ', idx1))
 
 suite = unittest.TestLoader().loadTestsFromTestCase(testMeetingMatrix)
 unittest.TextTestRunner(verbosity=2).run(suite)
