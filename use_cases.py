@@ -83,7 +83,7 @@ def useCaseTwo():
 #Given a single username in the local domain, provide a list of open times within the window specified. 
 #If no window is specifieed, use a sane default.
 def useCaseOne(): 
-	print 'Use case one - Given a time window provide a list of open time within window'
+	print 'Use case one - Given a single username, provide his open times within the window specified.'
 	availableMeetingSlots = list()
 	index = 0
 	#name = 'Jason'				        

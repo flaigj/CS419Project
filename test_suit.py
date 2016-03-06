@@ -16,7 +16,7 @@ class testMeetingMatrix(unittest.TestCase):
 	#Correct binary results for the time window specified to the right of it
 	matrixResults = list()
 	matrixResults = (
-		[1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1],	#Feb 23 2016 08:00 to Feb 23 2016 15:00
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],	#Feb 23 2016 08:00 to Feb 23 2016 15:00
 		[1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1],	#Feb 23 2016 08:00 to Feb 23 2016 15:00
 		[1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1]	#Feb 23 2016 08:00 to Feb 23 2016 15:00
 	)	
