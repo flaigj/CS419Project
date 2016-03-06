@@ -160,11 +160,17 @@ def getTimeWindowData(startTimeWindow, endTimeWindow):
 		timeWindow.append("Mon " + startTimeWindow + ":00 GMT-0800 (PST)")
 		timeWindow.append("Mon " + endTimeWindow + ":00 GMT-0800 (PST)")
 	else:	#else it's user data
-		print "Enter a time window in the following format: Jan 28 2016 15:30"
+		print "Enter a time window in the following format: Jan 02 2016 15:00"
 		timeType = ["start", "finish"]
 		for x in range(0, 2):
-			ipt = raw_input("Enter a " + timeType[x] + " window: ")
-			timeWindow.append("Mon " + ipt + ":00 GMT-0800 (PST)")
+			while(True):
+				userInput = raw_input("Enter a " + timeType[x] + " window: ")
+
+				#Validate user input is in correct fomat: Jan 02 2016 15:30
+				if func.userDateInputIsValid(userInput) == 1:	 #true
+					break
+
+			timeWindow.append("Mon " + userInput + ":00 GMT-0800 (PST)")
 
 	#Test names return successfully
 	#for index, elem in enumerate(participants):
