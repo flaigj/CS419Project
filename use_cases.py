@@ -6,7 +6,7 @@ import functions as func			#Helper functions
 
 
 #All participants and their availability during timeWindow: object MeetingMatrix
-meetingAvailability = fos.createMeetingMatrix(None, None, None)
+meetingAvailability = fos.createMeetingMatrix()
 
 #Meeting matrix: 2d binary array
 meetingMatrix = meetingAvailability.getMeetingMatrix()
@@ -86,14 +86,12 @@ def useCaseOne():
 	print 'Use case one - Given a single username, provide his open times within the window specified.'
 	availableMeetingSlots = list()
 	index = 0
-	#name = 'Jason'				        
-	#for index, elem in enumerate(participants):						               
-	#   if(elem.getEmail() == name):
-	#      break;        
 	for i in range(0, numOfWindowSlots):	                  
 	   if meetingMatrix[index][i] == 0:			                    
 	      availableMeetingSlots.append(i)
-	#print name + " is available for the following times"
+
+	email = participants[0].getEmail()
+	print '\n', email, 'is available at the following times for 30 minutes at each time:'
 	for i in availableMeetingSlots:					
 	   slot = func.posixToPST(timeWindowSlots[i])						               
 	   print slot
