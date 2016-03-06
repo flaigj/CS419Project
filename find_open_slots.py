@@ -110,9 +110,9 @@ def createMeetingMatrix(testStart, testEnd, testEmail):	#args are for test suite
 	
 				#Go to next participant if all participant time slots is checked
 				if(idxEvent == numOfParticipantSlots or idxActor == numOfWindowSlots):
-					#Set remainding meetingMatrix to 1, indicating no availability
+					#Set remainding meetingMatrix to 0, indicating participant is available
 					for j in range(idxActor, numOfWindowSlots):
-						timeSlots.append(1)		#mark remainder as unvailable
+						timeSlots.append(0)		#mark remainder as unvailable
 	
 					idxActor = 0	#reset iterator to first Actor's meeting slot
 					idxEvent = 0	#reset iterator to first time slot for next participant
