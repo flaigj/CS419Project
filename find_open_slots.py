@@ -25,7 +25,7 @@ class MeetingAvailability:
 		return self.timeWindowSlots
 
 
-def createMeetingMatrix():
+def createMeetingMatrix(testStart, testEnd, testEmail):	#args are for test suite only
 	#print "Test Arg length: ", len(sys.argv)
 	#print "Test Args: ", str(sys.argv)
 	if len(sys.argv) >= 4:	#run program with test data

@@ -6,7 +6,7 @@ import functions as func			#Helper functions
 
 
 #All participants and their availability during timeWindow: object MeetingMatrix
-meetingAvailability = fos.createMeetingMatrix()
+meetingAvailability = fos.createMeetingMatrix(None, None, None)
 
 #Meeting matrix: 2d binary array
 meetingMatrix = meetingAvailability.getMeetingMatrix()
