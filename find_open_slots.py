@@ -71,55 +71,65 @@ def createMeetingMatrix():
 		#print elePartpntm.getName()
 		numOfParticipantSlots = len(participantData[idxPartpnt].getBusyTimeSlot())
 		#print 'numOfParticipantSlots = ', numOfParticipantSlots
+		if participantData[idxPartpnt].getBusyTimeSlot()[0] is None: #participant available during all timeWindow
+			for x in range(0, numOfWindowSlots):		#Actor's desired meeting slots
+				timeSlots.append(0)						#participant available during time slot	
+			meetingMatrix[idxPartpnt] = timeSlots
+
+		else:	#participant has scheduled events during time window
+			while(idxActor < numOfWindowSlots):		#Actor's desired meeting slots
+				windowSlot = timeWindowSlots[idxActor]
+				participantSlot = participantData[idxPartpnt].getBusyTimeSlot()
 	
-		while(idxActor < numOfWindowSlots):		#Actor's desired meeting slots
-			windowSlot = timeWindowSlots[idxActor]
-			participantSlot = participantData[idxPartpnt].getBusyTimeSlot()
+				#Compare participant's time slot to Actor's desired meeting slots
+				#print 'idxEvent = ', idxEvent
+				#print 'idxActor = ', idxActor
+				if(idxEvent < numOfParticipantSlots):		#Participant time slot
+					participantPosix = func.timeStrToPosix(participantSlot[idxEvent])
+					#print func.posixToPST(participantPosix)
+					#print func.posixToPST(windowSlot)
 	
-			#Compare participant's time slot to Actor's desired meeting slots
-			#print 'idxEvent = ', idxEvent
-			#print 'idxActor = ', idxActor
-			if(idxEvent < numOfParticipantSlots):		#Participant time slot
-				participantPosix = func.timeStrToPosix(participantSlot[idxEvent])
-				print func.posixToPST(participantPosix)
-				print func.posixToPST(windowSlot)
+					if(participantPosix == windowSlot):
+						#print 'equal'
+						timeSlots.append(1)		#participant not available in meeting slot
+						idxActor += 1			#next Actor's meeting slot
+						idxEvent += 1			#next participant's time slot
+						#continue	
 	
-				if(participantPosix == windowSlot):
-					print 'equal'
-					timeSlots.append(1)		#participant not available in meeting slot
-					idxActor += 1			#next Actor's meeting slot
-					idxEvent += 1			#next participant's time slot
-					#continue	
+					if(participantPosix < windowSlot):
+						#print 'less'
+						timeSlots.append(0)		#participant available in meeting slot
+						idxEvent += 1			#next participant's time slot
+						#continue	
 	
-				if(participantPosix < windowSlot):
-					print 'less'
-					timeSlots.append(0)		#participant available in meeting slot
-					idxEvent += 1			#next participant's time slot
-					#continue	
+					if(participantPosix > windowSlot):
+						#print 'more'
+						timeSlots.append(0)		#participant available in meeting slot
+						idxActor += 1			#next Actor's meeting slot
+						#continue	
 	
-				if(participantPosix > windowSlot):
-					print 'more'
-					timeSlots.append(0)		#participant available in meeting slot
-					idxActor += 1			#next Actor's meeting slot
-					#continue	
+				#Go to next participant if all participant time slots is checked
+				if(idxEvent == numOfParticipantSlots or idxActor == numOfWindowSlots):
+					#Set remainding meetingMatrix to 1, indicating no availability
+					for j in range(idxActor, numOfWindowSlots):
+						timeSlots.append(1)		#mark remainder as unvailable
 	
-			#Go to next participant if all participant time slots is checked
-			if(idxEvent == numOfParticipantSlots or idxActor == numOfWindowSlots):
-				#Set remainding meetingMatrix to 1, indicating no availability
-				for j in range(idxActor, numOfWindowSlots):
-					timeSlots.append(1)		#mark remainder as unvailable
-	
-				idxActor = 0	#reset iterator to first Actor's meeting slot
-				idxEvent = 0	#reset iterator to first time slot for next participant
-				
-				#Store participant availability in meeting matrix
-				meetingMatrix[idxPartpnt] = timeSlots
-		
-				#print meetingMatrix
-				break		#got to next participant
+					idxActor = 0	#reset iterator to first Actor's meeting slot
+					idxEvent = 0	#reset iterator to first time slot for next participant
+					
+					#Store participant availability in meeting matrix
+					meetingMatrix[idxPartpnt] = timeSlots
+			
+					#print meetingMatrix
+					break		#got to next participant
 
 
 	#store meetingMatrix in MeetingAvailability object
 	meetingAvailability = MeetingAvailability(meetingMatrix, participantData, numOfWindowSlots, timeWindowSlots)
+	#print 'Fun starts here'
+	#print meetingAvailability.getMeetingMatrix()
+	#print meetingAvailability.getParticipants()
+	#print meetingAvailability.getNumOfWindowSlots()
+	#print meetingAvailability.getTimeWindowSlots()
 	return meetingAvailability
 	#return meetingMatrix
