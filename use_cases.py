@@ -47,7 +47,8 @@ def useCaseThree():
 				availableMeetingSlots.append(i)
 
 	#Display times when all participants are available during timeWindow
-	print 'Use Case Three - time slots when all participants are available for 30 minutes:'
+	print 'Use Case Three - given a more broad window and a list of usernames, provide all times when all participant\'s are available during for at least 30 minutes'
+	print '\nAll participant\'s are available during the following times for 30 minutes:'
 	for i in availableMeetingSlots:
 		slot = func.posixToPST(timeWindowSlots[i])
 		print slot
