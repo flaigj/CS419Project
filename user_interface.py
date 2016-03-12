@@ -31,9 +31,9 @@ def getName():
 def menu():
 	print "Welcome to the meeting scheduling applicaiton"
 	print "Choose of of the following options\n"
-	print "1) Get meeting times for one on one meeting"
-	print "2) Get available people for meeting"
-	print "3) Get meeting times for multiple people\n"
+	print "1) Get available times for a single participant within a time window"
+	print "2) Get emails of participants available for the entire time window"
+	print "3) Get emails of participants who are available at the same time for at least 30 minutes\n"
 
 	option = getNumber(1, 3)			# get number between 1 and 3
 	return option

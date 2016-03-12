@@ -24,10 +24,10 @@ numOfWindowSlots = meetingAvailability.getNumOfWindowSlots()
 timeWindowSlots = meetingAvailability.getTimeWindowSlots()
 
 #Print matrix by participant
-print '\nMeeting Matrix'
-for index, elem in enumerate(participants):
-		print meetingMatrix[index], elem.getEmail()
-print '\n'
+#print '\nMeeting Matrix'
+#for index, elem in enumerate(participants):
+#		print meetingMatrix[index], elem.getEmail()
+#print '\n'
 
 
 
@@ -47,7 +47,8 @@ def useCaseThree():
 				availableMeetingSlots.append(i)
 
 	#Display times when all participants are available during timeWindow
-	print 'Use Case Three - time slots when all participants are available for 30 minutes:'
+	print 'Use Case Three - given a more broad window and a list of usernames, provide all times when all participant\'s are available during for at least 30 minutes'
+	print '\nAll participant\'s are available during the following times for 30 minutes:'
 	for i in availableMeetingSlots:
 		slot = func.posixToPST(timeWindowSlots[i])
 		print slot
@@ -70,7 +71,8 @@ def useCaseTwo():
 				availableParticipants.append(i)
 
 	#Display times when participants are available during the entire timeWindow
-	print 'Use Case Two - participant(s) available during the entire time window'
+	print 'Use Case Two - given a specific time window and a list of usernames, list all users available for the entire duration.'
+	print '\nThe following participant\'s are available during the entire time window:'
 	for i in availableParticipants:
 		print participants[i].getEmail()
 	print '\n'
@@ -83,17 +85,15 @@ def useCaseTwo():
 #Given a single username in the local domain, provide a list of open times within the window specified. 
 #If no window is specifieed, use a sane default.
 def useCaseOne(): 
-	print 'Use case one - Given a time window provide a list of open time within window'
+	print 'Use case one - Given a single username, provide his open times within the window specified.'
 	availableMeetingSlots = list()
 	index = 0
-	#name = 'Jason'				        
-	#for index, elem in enumerate(participants):						               
-	#   if(elem.getEmail() == name):
-	#      break;        
 	for i in range(0, numOfWindowSlots):	                  
 	   if meetingMatrix[index][i] == 0:			                    
 	      availableMeetingSlots.append(i)
-	#print name + " is available for the following times"
+
+	email = participants[0].getEmail()
+	print '\n', email, 'is available at the following times for 30 minutes at each time:'
 	for i in availableMeetingSlots:					
 	   slot = func.posixToPST(timeWindowSlots[i])						               
 	   print slot
