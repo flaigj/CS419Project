@@ -68,9 +68,9 @@ def createMeetingMatrix():	#args are for test suite only
 	for idxPartpnt, elePartpntm in enumerate(participantData):		#Each participant
 		timeSlots = list()	#temp storage for each participant's time slot
 		#print '----------------------------'
-		#print elePartpntm.getName()
-		numOfParticipantSlots = len(participantData[idxPartpnt].getBusyTimeSlot())
+		#numOfParticipantSlots = len(participantData[idxPartpnt].getBusyTimeSlot())
 		#print 'numOfParticipantSlots = ', numOfParticipantSlots
+		
 		if participantData[idxPartpnt].getBusyTimeSlot()[0] is None: #participant available during all timeWindow
 			for x in range(0, numOfWindowSlots):		#Actor's desired meeting slots
 				timeSlots.append(0)						#participant available during time slot	
