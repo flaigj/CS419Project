@@ -407,3 +407,33 @@ def changeEventDate(newTS, oldTS):
 
 	ts = dayStr + ' ' + newSplit[1] + ' ' + newSplit[2] + ' ' + newSplit[3] + ' ' + oldSplit[4] + ' ' + oldSplit[5] + ' ' + oldSplit[6]
 	return ts
+
+
+#===================================================================================
+#validateUserTimestampInput
+#===================================================================================
+#Validate user's start and end time window date format
+#Input: datestamp in string format 
+#Ouput: 1 = correct format, 0 = incorrect format
+#Correct date format is: Jan 02 2016 15:00
+def userDateInputIsValid(userInput):
+	dateFormat = '%b %d %Y %H:%M' 
+	
+	#Check if input is in correct format 
+	try:
+		test = datetime.datetime.strptime(userInput, dateFormat)	
+	except ValueError:
+		print 'Incorrect date format. Please use the following format: Jan 09 2016 15:00'
+		return 0	#invalid date format
+
+	#Ensure day is zero padded if need be
+	inputSplit = userInput.split()
+
+	inputLength = len(inputSplit[1])
+	#print len(inputSplit[1])
+	dayInt = int(inputSplit[1])
+	if dayInt < 10 and inputLength < 2:	#ensure leading zero exists
+		print 'Incorrect date format. Ensure leading zero exist on days < 10, like: Jan 09 2016 15:00'
+		return 0	#invalid date format
+		
+	return 1	#valid date format	
