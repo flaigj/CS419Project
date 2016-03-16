@@ -58,6 +58,7 @@ def getParticipantData(timeWindow, emails):
 			for idxEvent, eleEvent in enumerate(responseJson['items']):	#for each event
 				if(eleEvent['status'] == 'confirmed' and	#ignore cancelled appointments
 				'dateTime' in responseJson['items'][idxEvent]['start']):	#ignore all day events
+					
 					eventStartRfcTimestamp = responseJson['items'][idxEvent]['start']['dateTime']
 					eventEndRfcTimestamp = responseJson['items'][idxEvent]['end']['dateTime']
 					eventSummary = responseJson['items'][idxEvent]['summary']
@@ -99,37 +100,31 @@ def getParticipantData(timeWindow, emails):
 						event = [email, eventSummary, eventStartGoogleTimestamp, eventEndGoogleTimestamp]
 						events.append(event)
 
+			#Add additional 30 minute slots
+			#If event duration > 30 mins, add additional 30 min slots
+			for idxEvent, event in enumerate(events):
+				startTimePosix = func.timeStrToPosix(event[2])
+				endTimePosix = func.timeStrToPosix(event[3])
+				duration = endTimePosix - startTimePosix
+				
+				email = event[0]
+				summary = event[1]
+				startTime = event[2]
+				endTime = event[3]
 
-
-				#Add additional 30 minute slots
-				#If event duration > 30 mins, add additional 30 min slots
-				for idxEvent, event in enumerate(events):
-					startTimePosix = func.timeStrToPosix(event[2])
-					endTimePosix = func.timeStrToPosix(event[3])
-					duration = endTimePosix - startTimePosix
-					
-					email = event[0]
-					summary = event[1]
-					startTime = event[2]
-					endTime = event[3]
-
-					if duration > 1800:		#duration > 30 minutes
-						slotCount = int(duration / 1800) - 1	#number of 30 minute slots to add
-						increase = 0
-						for i in range(slotCount):
-							#print 'start = ', startTime, summary
-							posixTime = func.timeStrToPosix(startTime)	#Google TS to Posix
-							increase = increase + 1800
-							posixTime = posixTime + increase	#increment by 30 minutes
-							startTime = func.posixToTimeStr(posixTime)
-							event = [email, summary, startTime, endTime]
-							events.append(event)		
-							#print 'end = ', startTime, summary
-						increase = 0
-
-			else:	#participant has no events that meet criteria. Return null
-				event = [eleEmail, None, None, None]
-				events.append(event)
+				if duration > 1800:		#duration > 30 minutes
+					slotCount = int(duration / 1800) - 1	#number of 30 minute slots to add
+					increase = 0
+					for i in range(slotCount):
+						#print 'start = ', startTime, summary
+						posixTime = func.timeStrToPosix(startTime)	#Google TS to Posix
+						increase = increase + 1800
+						posixTime = posixTime + increase	#increment by 30 minutes
+						startTime = func.posixToTimeStr(posixTime)
+						event = [email, summary, startTime, endTime]
+						events.append(event)		
+						#print 'end = ', startTime, summary
+					increase = 0
 
 		else:	#no events exists. Participant is available for the entire time window
 			event = [eleEmail, None, None, None]
@@ -142,9 +137,9 @@ def getParticipantData(timeWindow, emails):
 		#for idx, ele in enumerate(events):
 		#	print ele[2], ele[1]
 
-		#print '\n============ Sorted =================='
-		#for idx, ele in enumerate(eventsSorted):
-		#	print ele[2], ele[1]
+		print '\n============ Sorted =================='
+		for idx, ele in enumerate(eventsSorted):
+			print ele[2], ele[1]
 	
 		
 		#Store participant's event data to Participant object
