@@ -7,9 +7,11 @@
 <body>
 <p><h1>Welcome to the Meeting Planner</h1></p>
 <fieldset>
-<form action="/catalog" method="post" >
-	
+<form action="/catalog_input" method="post" >
+	<label for="catalog">View OSU course info from Catalog</label><br>
+	<input type="submit" name="catalog" value="Submit" />
 </form>
+<br>
 <form action="/input" method="post" >
 		<input type="hidden" name="action" value="choose_type" />
 		<label for="choose">Choose a meeting type</label><br>

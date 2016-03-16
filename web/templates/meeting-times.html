@@ -6,11 +6,16 @@
 </head>
 <body>
 <h1>Possible Meeting Times</h1>
-<h3>Events</h3>
+<h3>Sorted Events</h3>
 {% for os in orderedSlots %}
 {{ os }}<br>
 {% endfor %}<br>
-<h3>Open Times</h3>
+{% if usecase == "2" %}
+	<h3>Always available</h3>
+{% else %}
+	<h3>Open Meeting Times</h3>
+{% endif %}
+
 {% for s in slots %}
 {{ s }}<br>
 {% endfor %}

@@ -23,3 +23,8 @@ class ActorInput(webapp2.RequestHandler):
 
 		template = JINJA_ENVIRONMENT.get_template('actor-input.html')
 		self.response.write(template.render(template_values))
+
+class CourseInput(webapp2.RequestHandler):
+	def post(self):	
+		template = JINJA_ENVIRONMENT.get_template('osu_catalog_input.html')
+		self.response.write(template.render())

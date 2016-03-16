@@ -150,8 +150,11 @@ def getParticipantData(startWindow, endWindow, email, orderedSlots):
 			#print ele[2], ele[1]
 			myStr2 = ele[2]
 			myStr1 = ele[1] 
-			myStr = str(myStr2)
+			myStr2 = str(myStr2)
 			myStr1 = str(myStr1)
+			newStr = myStr1 + myStr2
+			if (myStr2 == "None" or myStr2 == "None"):
+				newStr = "None"
 			orderedSlots.append(myStr2 + " " + myStr1)
 		
 		

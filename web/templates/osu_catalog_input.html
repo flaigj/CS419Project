@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset='utf-8'>
+	<title>Course information</title>
+</head>
+<body>
+	<h1>Course information</h1>
+	<fieldset>
+	<form action="/catalog-api" method="post">		
+		<label for="catalog">View OSU course info from Catalog</label><br>
+		<input type="hidden" name="quarter" value="choose_qu" />
+		<label for="chooseQTR">Choose a quarter</label><br>
+		<input type="radio" name="chooseQTR" value="201602" required>
+		Winter<br>
+		<input type="radio" name="chooseQTR" value="201603" required>
+		Spring<br>
+		<input type="radio" name="chooseQTR" value="201700" required>
+		Summer<br>
+		<input type="radio" name="chooseQTR" value="201701" required>
+		Autumn<br>
+
+		<!-- chooseQTR, courseCode, courseNum as post vars for osu_catalog.py -->
+		<legend>Enter a course code:</legend>
+		Example: CS<br>
+		<input type="text" name="courseCode" />
+		</fieldset>
+		<fieldset>
+		<legend>Enter an course number:</legend>
+		Example: 161, 162, 290<br>
+		<input type="text" name="courseNum" />
+
+		<input type="submit" name="catalog" value="Submit" />
+	</form>
+	</fieldset>
+</body>
+</html>
