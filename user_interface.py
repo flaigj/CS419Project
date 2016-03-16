@@ -29,11 +29,22 @@ def getName():
 # display menu
 # get option from user
 def menu():
-	print "Welcome to the meeting scheduling applicaiton"
-	print "Choose of of the following options\n"
+	print "Welcome to the meeting scheduling application"
+	print "Choose one of the following options\n"
 	print "1) Get available times for a single participant within a time window"
 	print "2) Get emails of participants available for the entire time window"
 	print "3) Get emails of participants who are available at the same time for at least 30 minutes\n"
 
 	option = getNumber(1, 3)			# get number between 1 and 3
+	return option
+
+
+#Welcome screen
+def welcome():
+	print "Welcome to Group 9's Project"
+	print "Choose one of the following options\n"
+	print "1) View OSU course info from OSU's catalog"
+	print "2) Meeting Scheduler\n"
+
+	option = getNumber(1, 2)			# get number between 1 and 3
 	return option

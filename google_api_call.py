@@ -58,12 +58,11 @@ def getParticipantData(timeWindow, emails):
 			for idxEvent, eleEvent in enumerate(responseJson['items']):	#for each event
 				if(eleEvent['status'] == 'confirmed' and	#ignore cancelled appointments
 				'dateTime' in responseJson['items'][idxEvent]['start']):	#ignore all day events
-					print 'Inside non-ignored events'				
 					eventStartRfcTimestamp = responseJson['items'][idxEvent]['start']['dateTime']
 					eventEndRfcTimestamp = responseJson['items'][idxEvent]['end']['dateTime']
 					eventSummary = responseJson['items'][idxEvent]['summary']
 					email = responseJson['items'][idxEvent]['organizer']['email']
-					print eventStartRfcTimestamp, eventSummary
+					#print eventStartRfcTimestamp, eventSummary
 
 					#Convert RFC timestamp to Google timestamp format
 					eventStartGoogleTimestamp = func.rfcToGoogleTimestamp(eventStartRfcTimestamp)
@@ -97,7 +96,6 @@ def getParticipantData(timeWindow, emails):
 							#print i, eventStart, eventSummary
 
 					else:	#event is not recurring
-						print 'event is not recurring'
 						event = [email, eventSummary, eventStartGoogleTimestamp, eventEndGoogleTimestamp]
 						events.append(event)
 
