@@ -2,13 +2,15 @@
 
 #Import Modules
 import user_interface as ui
-
+import osu_catalog as cat
 # main entry point
 
 welcomeOption = ui.welcome()	#welcome screen. Choose OSU catalog or meeting scheduler
 
 if (welcomeOption == 1):
-	print 'OSU module gets launched'	#OSU catalog
+	#print 'OSU module gets launched'	#OSU catalog
+	cat.runCatalog()
+
 elif (welcomeOption == 2):
 	option = ui.menu()			#Meeting scheduler
 	import use_cases as uc					#Use cases functions
