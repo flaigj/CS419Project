@@ -27,7 +27,9 @@ termNum = getTermNumber()
 subjectCode = raw_input("Enter a subject Code: ")
 courseNum = raw_input("Enter a Course Number: ")
 
-response = urllib2.urlopen("http://localhost:8080/course/").read()
+
+response = urllib2.urlopen("http://apicatalog-1252.appspot.com/course/").read()
+#response = urllib2.urlopen("http://localhost:8080/course/").read()
 jsonResp = json.loads(response)
 jsonRespStr = str(jsonResp)
 
@@ -62,7 +64,8 @@ if not inDb:
 
 	print course + " " + days + " "  + date + " " + time
 
-	url = "http://localhost:8080/course/"
+	url = "http://apicatalog-1252.appspot.com/course/"
+	# url = "http://localhost:8080/course/"
 	data = urllib.urlencode({'name' : subjectCode+courseNum,
 	                         'days'  : days,
 	                         'time'  : time,
