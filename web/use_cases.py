@@ -24,7 +24,10 @@ class RunUseCases(webapp2.RequestHandler):
 
 		#self.response.write(startWindow)
 		#self.response.write(endWindow)
-		meetingAvailability = fos.createMeetingMatrix(startWindow, endWindow, email)
+
+		# create list orderedSlots
+		orderedSlots = list()
+		meetingAvailability = fos.createMeetingMatrix(startWindow, endWindow, email, orderedSlots)
 
 		#Meeting matrix: 2d binary array
 		meetingMatrix = meetingAvailability.getMeetingMatrix()
@@ -113,7 +116,7 @@ class RunUseCases(webapp2.RequestHandler):
 		else: 
 			slots = useCaseThree()
 
-		template_values = {'matrix':meetingMatrix,'slots':slots,'usecase':usecase}
+		template_values = {'orderedSlots':orderedSlots,'slots':slots,'usecase':usecase}
 
 		template = JINJA_ENVIRONMENT.get_template('meeting-times.html')
 		self.response.write(template.render(template_values))

@@ -6,6 +6,7 @@ import webapp2
 import os
 import jinja2
 import functions as func
+import unicodedata
 
 JINJA_ENVIRONMENT = jinja2.Environment(
 	loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'),
@@ -31,7 +32,7 @@ class Participant:
 	        return busyTimeSlot
 
 
-def getParticipantData(startWindow, endWindow, email):
+def getParticipantData(startWindow, endWindow, email, orderedSlots):
 	# if emails is not None:	#use test data
 	# 	emailList = emails
 	# else:	#use user data
@@ -146,8 +147,13 @@ def getParticipantData(startWindow, endWindow, email):
 
 		print '\n============ Sorted =================='
 		for idx, ele in enumerate(eventsSorted):
-			print ele[2], ele[1]
-	
+			#print ele[2], ele[1]
+			myStr2 = ele[2]
+			myStr1 = ele[1] 
+			myStr = str(myStr2)
+			myStr1 = str(myStr1)
+			orderedSlots.append(myStr2 + " " + myStr1)
+		
 		
 		#Store participant's event data to Participant object
 		participants.append( Participant(eventsSorted) )

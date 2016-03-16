@@ -25,7 +25,7 @@ class MeetingAvailability:
 		return self.timeWindowSlots
 
 
-def createMeetingMatrix(startWindow, endWindow, email):	#args are for test suite only
+def createMeetingMatrix(startWindow, endWindow, email, orderedSlots):	#args are for test suite only
 	#print "Test Arg length: ", len(sys.argv)
 	#print "Test Args: ", str(sys.argv)
 	# if len(sys.argv) >= 4:	#run program with test data
@@ -43,7 +43,7 @@ def createMeetingMatrix(startWindow, endWindow, email):	#args are for test suite
 	#timeWindowData = google.getTimeWindowData(startWindow) #get time window data from Google API call
 
 		#Get participants data from Google API call
-	participantData = google.getParticipantData(startWindow, endWindow, email)
+	participantData = google.getParticipantData(startWindow, endWindow, email, orderedSlots)
 
 	# parseGoogleTime returns class object for getday - getYear
 	#Parse start and end times of timeWindow provided by Actor and store in object GoogleTime

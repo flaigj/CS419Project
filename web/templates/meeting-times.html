@@ -6,10 +6,11 @@
 </head>
 <body>
 <h1>Possible Meeting Times</h1>
-<h3>Meeting Matrix</h3>
-{% for m in matrix %}
-{{ m }}<br>
+<h3>Events</h3>
+{% for os in orderedSlots %}
+{{ os }}<br>
 {% endfor %}<br>
+<h3>Open Times</h3>
 {% for s in slots %}
 {{ s }}<br>
 {% endfor %}
